@@ -1,0 +1,23 @@
+.signUpForm{
+    background: #104271;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    width: 580px;
+    border-radius: 6px;
+    margin: 0 auto;
+    display: table;
+    padding: 15px 30px 30px;
+    box-sizing: border-box;
+}
+
+.signUpBtn{
+    background: #38b6ff !important;
+}
+
+.signUpBtn:hover{
+    background: #1f7ed8 !important;
+}

@@ -1,0 +1,26 @@
+.App {
+  font-family: 'Montserrat', sans-serif;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.mainNav{
+  background: #104271;
+  width: 100%;
+  height: 70px;
+  display: flex;
+}
+
+.web-logo{
+  height: 60px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.right-side{
+  flex: 50%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
