@@ -1,9 +1,9 @@
-import React, {useContext, useState} from 'react'
-import {Navbar, Nav, Container, Image } from 'react-bootstrap';
+import React, {useContext} from 'react'
+import {Navbar, Nav, Container, Image, NavDropdown } from 'react-bootstrap';
 import {Link} from 'react-router-dom';
 import webLogo from './../assets/logo.png';
 import { SignInContext, UserTypeContext } from './../Helper/Context';
-
+import './Navigation.css';
 
 function Navigation(){
 
@@ -40,12 +40,21 @@ function Navigation(){
                               {type === "Representative" &&
                                 <Nav.Link as = {Link} to = '/representative/:id/lecturerlist' className="text-white p-3">Lecturer</Nav.Link>
                               }
-                              {type === "Lecturer" &&
-                              <Nav.Link as = {Link} to = '/lecturer/:id/companyproject' className="text-white p-3">Project</Nav.Link>
-                              }
-                              {type === "Representative" &&
-                                <Nav.Link as = {Link} to = '/representative/:id/lecturerproject' className="text-white p-3">Project</Nav.Link>
-                              }
+                              <NavDropdown title="Project" id ="nav-dropdown">
+                                {type === "Lecturer" &&
+                                  <NavDropdown.Item as = {Link} to = '/lecturer/:id/companyprojectlist'>Company Project</NavDropdown.Item>
+                                }
+                                {type === "Representative" &&
+                                  <NavDropdown.Item as = {Link} to = '/representative/:id/lecturerprojectlist'>Lecturer Project</NavDropdown.Item>
+                                }
+                                {type === "Lecturer" &&
+                                  <NavDropdown.Item as = {Link} to = '/lecturer/:id/yourproject'>Your Project</NavDropdown.Item>
+                                }
+                                {type === "Representative" &&
+                                  <NavDropdown.Item as = {Link} to = '/representative/:id/yourproject'>Your Project</NavDropdown.Item>
+                                }
+                              </NavDropdown>
+                              
                               {type === "Lecturer" &&
                               <Nav.Link as = {Link} to = '/lecturer/:id/news' className="text-white p-3">News</Nav.Link>
                               }

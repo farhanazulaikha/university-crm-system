@@ -4,22 +4,32 @@ import Axios from 'axios'
 
 function LecturerAddAttachment(props){
 
-    const [attachmentUrl, setUrl] = useState("");
+    const [file, setFile] = useState();
+    const [fileName, setFileName] = useState("");
 
     var projectId = props.itemID;
 
-    const addAttachment = (e) => {
+    const saveFile = (e) => {
+        setFile(e.target.files[0]);
+        setFileName(e.target.files[0].name);
+      };
 
-        e.preventDefault();
+    const addAttachment = async (e) => {
 
-        Axios.post("http://localhost:3001/addattachmentl", {
-            attachmentUrl: attachmentUrl,
-            projectId: projectId,
-        }).then((res) => {
-            window.alert('Attachment has been added!');
-            props.onHide();
-        })
-
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("fileName", fileName);
+        formData.append("projectId", projectId);
+        try{
+            const res = await Axios.post("http://localhost:3001/addattachmentl",
+                formData
+            ).then((res) => {
+                window.alert('Attachment has been added!');
+                props.onHide();
+            })
+        } catch(ex){
+            console.log(ex);
+        }
     }
 
     return(
@@ -37,14 +47,22 @@ function LecturerAddAttachment(props){
         <Modal.Body>
             <Form>
                 <Form.Group className="mb-3" controlId="attachmentUrl">
-                    <Form.Label>Title</Form.Label>
-                    <Form.Control as="textarea" rows={2} placeholder="Enter activity title here"  
-                        onChange = {(event) => {
-                            setUrl(event.target.value);
-                        }}
+                    <Form.Label>Upload file</Form.Label>
+                    <Form.Control type="file" placeholder="Upload your attachment here"  
+                        onChange = {saveFile}
                         required
                     />
                 </Form.Group>
+
+                {/* <Form.Group className="mb-3" controlId="attachmentName">
+                    <Form.Label>File name</Form.Label>
+                    <Form.Control type="text" placeholder="Enter your file name here"  
+                        onChange = {(event) => {
+                            setName(event.target.value);
+                        }}
+                        required
+                    />
+                </Form.Group> */}
                 
                 <div className = "d-flex flex-end justify-content-end align-items-end mt-3">
                     <div className = "px-3">

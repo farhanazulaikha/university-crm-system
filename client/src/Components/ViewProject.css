@@ -1,0 +1,16 @@
+.discussion{
+    margin-bottom: 15px;
+}
+
+.user{
+    border-bottom: 10px;
+    float: left;
+    font-weight:bold; 
+    color:#009;
+    margin-bottom: 5px;
+}
+
+.message{
+    margin-left: -15px;
+    font-style:italic;
+}

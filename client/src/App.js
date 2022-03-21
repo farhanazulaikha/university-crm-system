@@ -13,6 +13,9 @@ import CompanyList from './Components/CompanyList';
 import LecturerList from './Components/LecturerList';
 import LecturerAddProject from './Components/LecturerAddProject';
 import ViewProject from './Components/ViewProject';
+import CompanyProjectList from './Components/CompanyProjectList';
+import LecturerProjectList from './Components/LecturerProjectList';
+import YourProject from './Components/YourProject';
 
 function App() {
 
@@ -39,6 +42,12 @@ function App() {
 
         <Route path = "/lecturer/:id/companylist"><CompanyList /></Route>
         <Route path = "/representative/:id/lecturerlist"><LecturerList /></Route>
+
+        <Route path = "/lecturer/:id/companyprojectlist"><CompanyProjectList /></Route>
+        <Route path = "/representative/:id/lecturerprojectlist"><LecturerProjectList /></Route>
+
+        <Route path = "/lecturer/:id/yourproject"><YourProject /></Route>
+        <Route path = "/representative/:id/yourproject"><YourProject /></Route>
 
         <Route path = "/lecturer/:id/lectureraddproject"><LecturerAddProject /></Route>
         {/* <Route path = "/representative/:id/representativeaddproject"><RepresentativeAddProject /></Route> */}

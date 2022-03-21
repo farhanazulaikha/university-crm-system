@@ -3,6 +3,8 @@ const express = require("express")
 const app = express()
 const mysql = require('mysql')
 const cors = require("cors")
+const multer = require('multer');
+const path = require('path');
 const bcrypt = require('bcrypt');
 
 
@@ -19,6 +21,18 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+var storage = multer.diskStorage({
+    destination: (req, file, callBack) => {
+        callBack(null, './public/images/')
+    },
+    filename: (req,file,callBack) => {
+        callBack(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+    }
+})
+
+var upload = multer({
+    storage: storage
+});
 
 //sign up
 app.post("/signup", async(req, res) => {
@@ -250,6 +264,24 @@ app.post("/addactivityl", function(req,res) {
     }
 })
 
+app.post("/addattachmentl", upload.single('image'), (req,res) => {
+
+    if(!req.file){
+        console.log("No file upload");
+    }
+    else{
+        console.log(req.file.filename);
+        var imgsrc = 'htpp://127.0.0.1:3000/images/' + req.file.filename;
+        var id = req.file.projectId;
+        var insertImage = "INSERT INTO project_attachment(project_attachment_url, project_id) VALUES (?, ?);"
+
+        db.query(insertImage, [imgsrc, id], (err, result) => {
+            if(err) throw err
+            console.log("File uploaded");
+        })
+    }
+})
+
 app.get("/:projectId/activity", function(req, res){
 
     const projectId = req.params.projectId;
@@ -302,7 +334,6 @@ app.post("/addcomment", function(req,res) {
 app.get("/:projectId/discussion", function(req, res){
 
     const projectId = req.params.projectId;
-    // console.log(projectId);
 
     try{
         const findProjectDiscussion = "SELECT project_comment.project_comment_id, project_comment.project_comment_info, project_comment.project_id, lecturer.lecturer_name, company_representative.representative_name FROM project_comment INNER JOIN project ON project_comment.project_id=project.project_id LEFT JOIN lecturer ON project.lecturer_id=lecturer.lecturer_id LEFT JOIN company_representative ON project.representative_id=company_representative.representative_id WHERE project_comment.project_id = ?;";
@@ -318,6 +349,45 @@ app.get("/:projectId/discussion", function(req, res){
     }
 });
 
+app.get("/lecturer/:id/companylist", function(req, res){
+
+    // const id = req.params.id;
+    // console.log(projectId);
+
+    try{
+        const findCompanyList = "SELECT company.company_id, company.company_name, company.company_email, company.company_contactNo, company.company_preferences, company_category.category_label, company_sector.sector_label FROM company LEFT JOIN company_category ON company.category_id=company_category.category_id LEFT JOIN company_sector ON company.sector_id=company_sector.sector_id;";
+
+        db.query(findCompanyList, (err, result) => {
+
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+app.get("/lecturer/:id/companyprojectlist", function(req, res){
+
+    const status = "Available";
+    const owner = "Representative";
+
+    try{
+        const findCompanyProjectList = "SELECT project.project_id, project.project_title, project.project_information, project_type.project_type_label,project_fieldelective.project_field_label, project.representative_id, company_representative.representative_name FROM project INNER JOIN company_representative ON project.representative_id=company_representative.representative_id INNER JOIN project_type ON project.project_type_id=project_type.project_type_id INNER JOIN project_fieldelective ON project.project_field_id=project_fieldelective.project_field_id WHERE project.project_status=? AND project.project_owner=?";
+
+        // const findCompanyProjectList = "SELECT lecturer.lecturer_id, lecturer.lecturer_name, project.project_id, project.project_title, project.project_information, project_type.project_type_label,project_fieldelective.project_field_label FROM project INNER JOIN lecturer ON project.lecturer_id=lecturer.lecturer_id INNER JOIN project_type ON project.project_type_id=project_type.project_type_id INNER JOIN project_fieldelective ON project.project_field_id=project_fieldelective.project_field_id WHERE project.project_status=? AND project.project_owner=?";
+
+        db.query(findCompanyProjectList, [status, owner], (err, result) => {
+
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
 
 app.listen(3001, () => {
     console.log("running on port 3001");

@@ -6,6 +6,9 @@ import Axios from 'axios';
 import LecturerAddActivity from './LecturerAddActivity';
 import LecturerAddAttachment from './LecturerAddAttachment';
 import AddComment from './AddComment';
+import './ViewProject.css';
+
+var moment = require('moment');
 
 function ViewProject (){
 
@@ -25,9 +28,9 @@ function ViewProject (){
     const [projectType, setProjectType] = useState("");
     const [projectField, setProjectField] = useState("");
     const [projectOwner, setProjectOwner] = useState("");
-    const [lecturerId, setLecturerId] = useState(0);
+    const [lecturerId, setLecturerId] = useState("");
     const [lecturerName, setLecturerName] = useState("");
-    const [representativeId, setRepresentativeId] = useState(0);
+    const [representativeId, setRepresentativeId] = useState("");
     const [representativeName, setRepresentativeName] = useState("");
 
     const [name, setName] = useState("");
@@ -74,13 +77,13 @@ function ViewProject (){
 
             if(type === projectOwner){
                 setIsOwner(true);
+            }
 
-                if (projectOwner === 'Lecturer'){
-                    setName(lecturerName);
-                }
-                else if(projectOwner === 'Representative'){
-                    setName(representativeName);
-                }
+            if (projectOwner === 'Lecturer'){
+                setName(lecturerName);
+            }
+            else if(projectOwner === 'Representative'){
+                setName(representativeName);
             }
         })
         }
@@ -143,7 +146,7 @@ function ViewProject (){
 
     return(
         <div className="d-flex justify-content-center">
-            <Card className = "border m-3 p-5">
+            <Card className = "border m-3 p-5" style={{ width: '80%' }}>
                 <Card.Title><strong>{projectTitle}</strong></Card.Title>
                 <hr/>
                 <Card.Body>
@@ -164,7 +167,7 @@ function ViewProject (){
                         </Row>
                         :
                         <Row>
-                            <Button variant="link">{name}</Button>
+                            <Button variant = "link" className = "btn btn-link text-black bg-white border-0 d-flex justify-content-start">{name}</Button>
                         </Row>
                     }
                     <hr/>
@@ -188,7 +191,7 @@ function ViewProject (){
                     
                     {
                         isBelong && isActivity ?
-                        <Row className = "mb-5">
+                        <Row className = "mb-5 text-center">
                             <Col className = "fw-bold">Title</Col>
                             <Col className = "fw-bold">Information</Col>
                             <Col className = "fw-bold">Start Date</Col>
@@ -205,10 +208,10 @@ function ViewProject (){
                                             {val.project_activity_information}
                                         </Col>
                                         <Col>
-                                            {val.project_activity_startdate}
+                                            {moment(val.project_activity_startdate).format('DD-MM-YYYY')}
                                         </Col>
                                         <Col>
-                                            {val.project_activity_enddate}
+                                            {moment(val.project_activity_enddate).format('DD-MM-YYYY')}
                                         </Col>
                                     </Row>
                                     
@@ -264,21 +267,26 @@ function ViewProject (){
                     {
                             isDiscussion
                             ?
-                            <Row className = "mb-3">
+                            <Col className = "discussion mb-3">
                                 {discussionList.map((val1, key1) => {
                                 return(
                                     <div key = {key1}>
                                         <Row>
-                                            {val1.commenterName}
+                                            <Col className = "user">
+                                                {val1.lecturer_name}
+                                            </Col>
+                                            <Col className = "message">
+                                                {val1.project_comment_info}
+                                            </Col>
                                         </Row>
-                                        <Row>
+                                        {/* <Row className = "message">
                                             {val1.project_comment_info}
-                                        </Row>
+                                        </Row> */}
                                     </div>
                                 )
                                 }
                                 )}
-                            </Row>
+                            </Col>
                             :
                             <p className = "text-center">No comment has been made yet!</p>
                     }
