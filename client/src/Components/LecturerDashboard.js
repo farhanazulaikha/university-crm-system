@@ -3,11 +3,12 @@ import LecturerProfile from './LecturerProfile';
 import {Card, Row, Col} from 'react-bootstrap'
 import './Profile.css'
 import LecturerProject from './LecturerProject';
+import LecturerActivity from './LecturerActivity';
 
 function LecturerDashboard(){
     return(
         <div className="d-flex justify-content-center">
-            <Card>
+            <Card style={{ width: '70%' }}>
                 <Card.Body className = "m-3">
                 <h3 className = "m-3">Personal Information</h3>
                 <hr/>
@@ -19,7 +20,7 @@ function LecturerDashboard(){
                         <LecturerProject/>
                     </Col>
                     <Col>
-                    activity
+                        <LecturerActivity/>
                     </Col>
                 </Row>
                 </Card.Body>

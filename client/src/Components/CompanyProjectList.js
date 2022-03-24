@@ -2,6 +2,7 @@ import React, {useEffect, useContext, useState} from 'react'
 import { UserContext} from './../Helper/Context';
 import {Card, Table} from 'react-bootstrap';
 import Axios from 'axios';
+import SearchProject from './SearchProject';
 
 function CompanyProjectList(){
 
@@ -32,6 +33,13 @@ function CompanyProjectList(){
                     <hr/>
                 </Card.Title>
                 <Card.Body className = "mx-3">
+                {companyProject &&
+                    <SearchProject
+                    projectList={companyProjectList}
+                    filteredList={setCompanyProjectList}
+                    // setCompanyProjectList={companyProjectList}
+                    />
+                }
                 {companyProject &&
                 
                     <Table striped bordered hover>

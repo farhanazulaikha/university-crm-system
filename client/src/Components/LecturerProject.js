@@ -45,25 +45,25 @@ function LecturerProject(){
         <div>
             <Card className = "p-1">
                 <Card.Title className = "px-3 pt-3">
-                    Your Projects
+                    Your Project
                     <hr/>
                 </Card.Title>
-                <Card.Body className = "mx-3">
+                <Card.Body>
                         {project && 
-                        <Col>
+                        <Row>
                             {projectList.map((val, key) => {
                                 return(
                                     <div key = {key}>
-                                    <Row>
-                                        <Button variant="link" 
+                                    <Col>
+                                        <Button variant="link" className = "btn btn-link d-flex justify-content-start"
                                         onClick={(event) => {
                                             showProject(event, val.project_id);
                                         }}>{val.project_title}</Button>
-                                    </Row>
+                                    </Col>
                                     </div>
                                 )
                             })}
-                        </Col>
+                        </Row>
                         }
 
                         {!project &&

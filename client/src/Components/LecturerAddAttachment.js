@@ -16,14 +16,16 @@ function LecturerAddAttachment(props){
 
     const addAttachment = async (e) => {
 
+        e.preventDefault();
+
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("image", file);
         formData.append("fileName", fileName);
         formData.append("projectId", projectId);
         try{
             const res = await Axios.post("http://localhost:3001/addattachmentl",
                 formData
-            ).then((res) => {
+            ).then((response) => {
                 window.alert('Attachment has been added!');
                 props.onHide();
             })
@@ -46,9 +48,12 @@ function LecturerAddAttachment(props){
         </Modal.Header>
         <Modal.Body>
             <Form>
-                <Form.Group className="mb-3" controlId="attachmentUrl">
+                <Form.Group className="mb-3" controlId="projectId">
+                    <Form.Label>Project ID: {projectId}</Form.Label>
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="image">
                     <Form.Label>Upload file</Form.Label>
-                    <Form.Control type="file" placeholder="Upload your attachment here"  
+                    <Form.Control type="file" name='image' placeholder="Upload your attachment here"  
                         onChange = {saveFile}
                         required
                     />

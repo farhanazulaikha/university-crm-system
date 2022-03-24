@@ -142,12 +142,26 @@ function ViewProject (){
             }
         })
     });
+
+    const updateProject = () => {
+        history.push(`/lecturer/${userId}/editproject/${projectId}`)
+    }
     
 
     return(
         <div className="d-flex justify-content-center">
             <Card className = "border m-3 p-5" style={{ width: '80%' }}>
-                <Card.Title><strong>{projectTitle}</strong></Card.Title>
+                <Row>
+                    <Col>
+                    <   Card.Title><strong>{projectTitle}</strong></Card.Title>
+                    </Col>
+                    {isOwner &&
+                        <Col className = "d-flex justify-content-end">
+                            <Button variant = "link" className = "btn btn-link d-flex justify-content-end"
+                            onClick = {updateProject}>Edit</Button>
+                        </Col>
+                    }
+                </Row>
                 <hr/>
                 <Card.Body>
                     <strong>Project Information:</strong> {projectInformation}
@@ -167,7 +181,7 @@ function ViewProject (){
                         </Row>
                         :
                         <Row>
-                            <Button variant = "link" className = "btn btn-link text-black bg-white border-0 d-flex justify-content-start">{name}</Button>
+                            <Button variant = "link" className = "btn btn-link d-flex justify-content-start">{name}</Button>
                         </Row>
                     }
                     <hr/>

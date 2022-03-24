@@ -8,7 +8,6 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 
 
-
 const db = mysql.createPool({
     host: "localhost",
     user: "root",
@@ -20,10 +19,11 @@ const db = mysql.createPool({
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static(__dirname));
 
 var storage = multer.diskStorage({
     destination: (req, file, callBack) => {
-        callBack(null, './public/images/')
+        callBack(null,  path.join(__dirname, './../client/public/images'))
     },
     filename: (req,file,callBack) => {
         callBack(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
@@ -149,6 +149,17 @@ app.get("/lectprofile/:id", function(req, res){
     }
 });
 
+app.get("/type", function(req, res){
+    const type = "SELECT * FROM project_type;"
+
+    db.query(type, (err, result) => {
+        res.send(result);
+    }
+    )
+
+
+})
+
 app.post("/addnewprojectl", function(req,res) {
 
     const id = req.body.userId;
@@ -192,15 +203,23 @@ app.get("/lectproject/:id", function(req, res){
         const findLectProject = "SELECT lecturer.lecturer_id, lecturer.lecturer_name, project.project_id, project.project_title, project.project_information, project_type.project_type_label, project_fieldelective.project_field_label FROM lecturer INNER JOIN project ON lecturer.lecturer_id = project.lecturer_id INNER JOIN project_type ON project.project_type_id = project_type.project_type_id INNER JOIN project_fieldelective ON project.project_field_id = project_fieldelective.project_field_id WHERE lecturer.lecturer_id = ? LIMIT 3;";
 
         db.query(findLectProject, id, (err, result) => {
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
 
-            // console.log(result);
+app.get("/lectactivity/:id", function(req, res){
 
-            // if(result.length > 1){
-            //     res.send(result);
-            // }
-            // else{
-            //     res.send(result);
-            // }
+    const id = req.params.id;
+
+    try{
+        const findLectActivity = "SELECT project_activity.project_activity_title, project.project_id FROM project INNER JOIN project_activity ON project.project_id=project_activity.project_id WHERE project.lecturer_id=? ORDER BY project_activity_id DESC LIMIT 3;;";
+
+        db.query(findLectActivity, id, (err, result) => {
             res.send(result);
         }
         )
@@ -270,14 +289,15 @@ app.post("/addattachmentl", upload.single('image'), (req,res) => {
         console.log("No file upload");
     }
     else{
-        console.log(req.file.filename);
+        // console.log(req.file.filename);
         var imgsrc = 'htpp://127.0.0.1:3000/images/' + req.file.filename;
-        var id = req.file.projectId;
+        var id = req.body.projectId;
         var insertImage = "INSERT INTO project_attachment(project_attachment_url, project_id) VALUES (?, ?);"
 
         db.query(insertImage, [imgsrc, id], (err, result) => {
             if(err) throw err
-            console.log("File uploaded");
+            res.send(result);
+            // console.log("File uploaded");
         })
     }
 })
