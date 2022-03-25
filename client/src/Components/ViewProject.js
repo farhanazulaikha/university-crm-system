@@ -3,8 +3,8 @@ import {Card, Col, Row, Button} from 'react-bootstrap';
 import { UserContext, UserTypeContext } from './../Helper/Context';
 import { useHistory } from 'react-router-dom';
 import Axios from 'axios';
-import LecturerAddActivity from './LecturerAddActivity';
-import LecturerAddAttachment from './LecturerAddAttachment';
+import AddActivity from './AddActivity';
+import AddAttachment from './AddAttachment';
 import AddComment from './AddComment';
 import './ViewProject.css';
 
@@ -93,6 +93,34 @@ function ViewProject (){
                 projectId: projectId,
         })
         .then((res) => {
+            setProjectCode(res.data.projectId);
+            setProjectTitle(res.data.projectTitle);
+            setProjectInformation(res.data.projectInformation);
+            setProjectStatus(res.data.projectStatus);
+            setProjectType(res.data.projectType);
+            setProjectField(res.data.projectField);
+            setProjectOwner(res.data.projectOwner);
+            setLecturerId(res.data.lecturerId);
+            setLecturerName(res.data.lecturerName);
+            setRepresentativeId(res.data.representativeId);
+            setRepresentativeName(res.data.representativeName);
+
+            // console.log(userId, lecturerId, representativeId);
+
+            if(userId === representativeId || lecturerId){
+                setIsBelong(true);
+            }
+
+            if(type === projectOwner){
+                setIsOwner(true);
+            }
+
+            if (projectOwner === 'Lecturer'){
+                setName(lecturerName);
+            }
+            else if(projectOwner === 'Representative'){
+                setName(representativeName);
+            }
             
         })
         }
@@ -193,7 +221,7 @@ function ViewProject (){
                             </Col>
                             <Col className = "d-flex justify-content-end">
                                 <Button variant="link" onClick={ () => setModalActivity(true)}>+ Add</Button>
-                                <LecturerAddActivity
+                                <AddActivity
                                     show={modalActivity}
                                     itemID={projectCode}
                                     onHide={()=> setModalActivity(false)}
@@ -208,8 +236,6 @@ function ViewProject (){
                         <Row className = "mb-5 text-center">
                             <Col className = "fw-bold">Title</Col>
                             <Col className = "fw-bold">Information</Col>
-                            <Col className = "fw-bold">Start Date</Col>
-                            <Col className = "fw-bold">End Date</Col>
                             {activityList.map((val, key) => {
                                 return(
                                     <div key = {key}>
@@ -220,12 +246,6 @@ function ViewProject (){
                                         </Col>
                                         <Col>
                                             {val.project_activity_information}
-                                        </Col>
-                                        <Col>
-                                            {moment(val.project_activity_startdate).format('DD-MM-YYYY')}
-                                        </Col>
-                                        <Col>
-                                            {moment(val.project_activity_enddate).format('DD-MM-YYYY')}
                                         </Col>
                                     </Row>
                                     
@@ -246,7 +266,7 @@ function ViewProject (){
                             </Col>
                             <Col className = "d-flex justify-content-end">
                             <Button variant="link" onClick={ () => setModalAttachment(true)}>+ Add</Button>
-                                <LecturerAddAttachment
+                                <AddAttachment
                                     show={modalAttachment}
                                     itemID={projectCode}
                                     onHide={()=> setModalAttachment(false)}

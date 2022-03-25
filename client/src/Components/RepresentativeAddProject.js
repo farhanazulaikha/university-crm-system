@@ -4,67 +4,74 @@ import { Form, Button } from 'react-bootstrap';
 import Axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
-function LecturerEditProject(){
+function RepresentativeAddProject() {
 
     const history = useHistory();
 
     const {userId, setUserId} = useContext(UserContext);
     const {type, isUserType} = useContext(UserTypeContext);
 
-    const [projectTitle, setProjectTitle] = useState("");
-    const [projectInformation, setProjectInformation] = useState("");
-    const [projectStatus, setProjectStatus] = useState("");
-    const [projectType, setProjectType] = useState("");
-    const [projectField, setProjectField] = useState("");
-    const [representativeId, setRepresentativeId] = useState("");
+    const [projectTitle, setTitle] = useState("");
+    const [projectInformation, setInformation] = useState("");
+    const [projectStatus, setStatus] = useState("");
+    const [projectType, setType] = useState("");
+    const [projectField, setField] = useState("");
 
     const [pType, setPType] = useState([]);
     const [pField, setPField] = useState([]);
 
-    const link = window.location.pathname;
-    const split = link.split("/");
-    const projectId = split[4];
-
-    
     useEffect(() => {
         Axios.get('http://localhost:3001/type').then((response) => {
             setPType(response.data);
         })
-    });
+    }, [userId]);
 
     useEffect(() => {
         Axios.get('http://localhost:3001/field').then((response) => {
             setPField(response.data);
         })
-    });
+    }, [userId]);
 
-    useEffect(()=>{
-        Axios.get(`http://localhost:3001/lecturer/${userId}/viewproject/${projectId}`,{
+    const addNewProject = (e) => {
+
+        e.preventDefault();
+
+        // let pType = projectType.toUpperCase();
+        // let field = projectField.toUpperCase();
+        let status = projectStatus.charAt(0).toUpperCase() + projectStatus.slice(1);
+
+        Axios.post("http://localhost:3001/addnewprojectr", {
             userId: userId,
-            projectId: projectId,
+            projectTitle: projectTitle,
+            projectInformation: projectInformation,
+            projectStatus: status,
+            projectType: projectType,
+            projectField: projectField,
+            projectOwner: type,
         })
         .then((res) => {
-            setProjectTitle(res.data.projectTitle);
-            setProjectInformation(res.data.projectInformation);
-            setProjectStatus(res.data.projectStatus);
-            setProjectType(res.data.projectType);
-            setProjectField(res.data.projectField);
-        })
-    });
+            if(res.data.addSuccess){
+                window.alert("Successfully added new project!");
+                history.push(`/representative/${userId}/dashboard`);
+            }
+            else{
+                window.alert("Try again!");
+            }
+        })};
 
-    return(
-        <div>
-            <Form className = "border m-3 p-5">
-            <h3>Edit Project</h3>
+  return (
+    <div>
+        <Form onSubmit = {addNewProject} className = "border m-3 p-5">
+            <h3>Add Project</h3>
+
             <hr/>
             
             <Form.Group className="mb-3" controlId="projectTitle">
             <Form.Label>Project Title</Form.Label>
               <Form.Control type="text" placeholder="Enter your project title here"  
                   onChange = {(event) => {
-                    setProjectTitle(event.target.value);
+                    setTitle(event.target.value);
                   }}
-                  defaultValue = {projectTitle}
                 />
             </Form.Group>
             
@@ -72,9 +79,8 @@ function LecturerEditProject(){
             <Form.Label>Project Information</Form.Label>
                 <Form.Control as="textarea" rows={3} placeholder="Enter your project information here"  
                   onChange = {(event) => {
-                    setProjectInformation(event.target.value);
+                    setInformation(event.target.value);
                   }}
-                  defaultValue = {projectInformation}
                 />
             </Form.Group>
 
@@ -82,9 +88,8 @@ function LecturerEditProject(){
                 <Form.Label>Project Status</Form.Label>
                 <Form.Control as="select" 
                     onChange = {(event) => {
-                        setProjectStatus(event.target.value);
+                        setStatus(event.target.value);
                     }}
-                    defaultValue = {projectStatus}
                 >
                     <option className = "text-muted">Select your project status here...</option>
                     <option value="available">Available</option>
@@ -96,9 +101,8 @@ function LecturerEditProject(){
                     <Form.Label>Project Type</Form.Label>
                     <Form.Control as="select" 
                     onChange = {(event) => {
-                        setProjectType(event.target.value);
+                        setType(event.target.value);
                     }}
-                    defaultValue={projectType}
                 >
                     <option className = "text-muted">Select your project type here...</option>
                     {pType.map((val, key) => {
@@ -113,9 +117,8 @@ function LecturerEditProject(){
                     <Form.Label>Project Field</Form.Label>
                     <Form.Control as="select" 
                     onChange = {(event) => {
-                        setProjectField(event.target.value);
+                        setField(event.target.value);
                     }}
-                    defaultValue = {projectField}
                 >
                     <option className = "text-muted">Select your project field here...</option>
                     {pField.map((val1, key1) => {
@@ -130,13 +133,13 @@ function LecturerEditProject(){
 
             <div className = "d-flex flex-end  justify-content-end align-items-end mt-3">
             <Button className = "d-flex flex-end justify-content-end align-items-end" variant="primary" type="submit">
-                Update
+                Add
             </Button>
           </div>
 
           </Form>
-        </div>
-    )
+    </div>
+  )
 }
 
-export default LecturerEditProject;
+export default RepresentativeAddProject

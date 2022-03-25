@@ -12,7 +12,7 @@ function SignUp(){
     const [userEmail, setEmail] = useState("");
     const [userPassword, setPassword] = useState("");
     const [userFullName, setFullName] = useState("");
-    const [userContact, setContact] = useState("");
+    const [userContact, setContact] = useState(0);
     const [userType, setType] = useState("");
 
 
@@ -85,7 +85,7 @@ function SignUp(){
             
             <Form.Group className="mb-3" controlId="userContact">
                     <Form.Label>Contact Number</Form.Label>
-                    <Form.Control type="text" placeholder="Enter contact number here" 
+                    <Form.Control type="number" placeholder="Enter contact number here" 
                     onChange = {(event) => {
                       setContact(event.target.value);
                     }}

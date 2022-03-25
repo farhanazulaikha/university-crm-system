@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, {useContext, useState, useEffect} from 'react'
 import { UserContext, UserTypeContext } from '../Helper/Context';
 import { Form, Button } from 'react-bootstrap';
 import Axios from 'axios';
@@ -17,6 +17,21 @@ function LecturerAddProject(){
     const [projectStatus, setStatus] = useState("");
     const [projectType, setType] = useState("");
     const [projectField, setField] = useState("");
+
+    const [pType, setPType] = useState([]);
+    const [pField, setPField] = useState([]);
+
+    useEffect(() => {
+        Axios.get('http://localhost:3001/type').then((response) => {
+            setPType(response.data);
+        })
+    });
+
+    useEffect(() => {
+        Axios.get('http://localhost:3001/field').then((response) => {
+            setPField(response.data);
+        })
+    });
 
     const addNewProject = (e) => {
 
@@ -91,8 +106,11 @@ function LecturerAddProject(){
                     }}
                 >
                     <option className = "text-muted">Select your project type here...</option>
-                    <option value="rnd">Research and Development (RND)</option>
-                    <option value="tnl">Teaching and Learning (TNL)</option>
+                    {pType.map((val, key) => {
+                        return(
+                                <option key = {key} value = {val.project_type_id}>{val.project_type_label}</option>
+                        )
+                    })}
                 </Form.Control>
             </Form.Group>
             
@@ -104,12 +122,11 @@ function LecturerAddProject(){
                     }}
                 >
                     <option className = "text-muted">Select your project field here...</option>
-                    <option value="ci1">Embedded Systems</option>
-                    <option value="ci2">Information Security and Assurance</option>
-                    <option value="ic1">Intelligent Systems and Data Analytics</option>
-                    <option value="ic2">Media and Visual Computing</option>
-                    <option value="se1">Information Systems Development</option>
-                    <option value="se2">Specialised Systems Development</option>
+                    {pField.map((val1, key1) => {
+                        return(
+                                <option key = {key1} value = {val1.project_field_id}>{val1.project_field_label}</option>
+                        )
+                    })}
                 </Form.Control>
             </Form.Group>
             

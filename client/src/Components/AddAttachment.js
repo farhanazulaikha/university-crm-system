@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {Modal, Form, Button} from 'react-bootstrap'
 import Axios from 'axios'
 
-function LecturerAddAttachment(props){
+function AddAttachment(props){
 
     const [file, setFile] = useState();
     const [fileName, setFileName] = useState("");
@@ -23,9 +23,9 @@ function LecturerAddAttachment(props){
         formData.append("fileName", fileName);
         formData.append("projectId", projectId);
         try{
-            const res = await Axios.post("http://localhost:3001/addattachmentl",
+            const res = await Axios.post("http://localhost:3001/addattachment",
                 formData
-            ).then((response) => {
+            ).then((res) => {
                 window.alert('Attachment has been added!');
                 props.onHide();
             })
@@ -84,4 +84,4 @@ function LecturerAddAttachment(props){
     )
 }
 
-export default LecturerAddAttachment;
+export default AddAttachment;

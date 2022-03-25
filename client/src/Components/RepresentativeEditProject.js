@@ -3,10 +3,9 @@ import { UserContext, UserTypeContext } from '../Helper/Context';
 import { Form, Button } from 'react-bootstrap';
 import Axios from 'axios';
 import { useHistory } from 'react-router-dom';
+function RepresentativeEditProject() {
 
-function LecturerEditProject(){
-
-    const history = useHistory();
+  const history = useHistory();
 
     const {userId, setUserId} = useContext(UserContext);
     const {type, isUserType} = useContext(UserTypeContext);
@@ -16,7 +15,7 @@ function LecturerEditProject(){
     const [projectStatus, setProjectStatus] = useState("");
     const [projectType, setProjectType] = useState("");
     const [projectField, setProjectField] = useState("");
-    const [representativeId, setRepresentativeId] = useState("");
+    const [lecturerId, setLecturerId] = useState("");
 
     const [pType, setPType] = useState([]);
     const [pField, setPField] = useState([]);
@@ -26,6 +25,7 @@ function LecturerEditProject(){
     const projectId = split[4];
 
     
+
     useEffect(() => {
         Axios.get('http://localhost:3001/type').then((response) => {
             setPType(response.data);
@@ -33,13 +33,13 @@ function LecturerEditProject(){
     });
 
     useEffect(() => {
-        Axios.get('http://localhost:3001/field').then((response) => {
-            setPField(response.data);
-        })
-    });
+      Axios.get('http://localhost:3001/field').then((response) => {
+          setPField(response.data);
+      })
+  });
 
     useEffect(()=>{
-        Axios.get(`http://localhost:3001/lecturer/${userId}/viewproject/${projectId}`,{
+        Axios.get(`http://localhost:3001/representative/${userId}/viewproject/${projectId}`,{
             userId: userId,
             projectId: projectId,
         })
@@ -52,9 +52,9 @@ function LecturerEditProject(){
         })
     });
 
-    return(
-        <div>
-            <Form className = "border m-3 p-5">
+  return (
+    <div>
+      <Form className = "border m-3 p-5">
             <h3>Edit Project</h3>
             <hr/>
             
@@ -64,7 +64,7 @@ function LecturerEditProject(){
                   onChange = {(event) => {
                     setProjectTitle(event.target.value);
                   }}
-                  defaultValue = {projectTitle}
+                  value = {projectTitle}
                 />
             </Form.Group>
             
@@ -74,7 +74,7 @@ function LecturerEditProject(){
                   onChange = {(event) => {
                     setProjectInformation(event.target.value);
                   }}
-                  defaultValue = {projectInformation}
+                  value = {projectInformation}
                 />
             </Form.Group>
 
@@ -84,7 +84,7 @@ function LecturerEditProject(){
                     onChange = {(event) => {
                         setProjectStatus(event.target.value);
                     }}
-                    defaultValue = {projectStatus}
+                    value = {projectStatus}
                 >
                     <option className = "text-muted">Select your project status here...</option>
                     <option value="available">Available</option>
@@ -98,7 +98,7 @@ function LecturerEditProject(){
                     onChange = {(event) => {
                         setProjectType(event.target.value);
                     }}
-                    defaultValue={projectType}
+                    value={projectType}
                 >
                     <option className = "text-muted">Select your project type here...</option>
                     {pType.map((val, key) => {
@@ -115,9 +115,9 @@ function LecturerEditProject(){
                     onChange = {(event) => {
                         setProjectField(event.target.value);
                     }}
-                    defaultValue = {projectField}
+                    value = {projectField}
                 >
-                    <option className = "text-muted">Select your project field here...</option>
+                  <option className = "text-muted">Select your project field here...</option>
                     {pField.map((val1, key1) => {
                         return(
                                 <option key = {key1} value = {val1.project_field_id}>{val1.project_field_label}</option>
@@ -135,8 +135,8 @@ function LecturerEditProject(){
           </div>
 
           </Form>
-        </div>
-    )
+    </div>
+  )
 }
 
-export default LecturerEditProject;
+export default RepresentativeEditProject

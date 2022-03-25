@@ -133,13 +133,16 @@ app.get("/lectprofile/:id", function(req, res){
     const id = req.params.id;
 
     try{
-        const findLecturer = "SELECT lecturer_id, lecturer_email, lecturer_name FROM lecturer WHERE lecturer_id = ?";
+        const findLecturer = "SELECT lecturer_id, lecturer_email, lecturer_name, lecturer_contactNo, lecturer_preferences, lecturer_image FROM lecturer WHERE lecturer_id = ?";
 
         db.query(findLecturer, id, (err, result) => {
             res.send({
                 id: result[0].lecturer_id,
                 email: result[0].lecturer_email,
                 name: result[0].lecturer_name,
+                contactNo: result[0].lecturer_contactNo,
+                preferences: result[0].lecturer_preferences,
+                image: result[0].lecturer_image,
             })
         }
         )
@@ -149,6 +152,86 @@ app.get("/lectprofile/:id", function(req, res){
     }
 });
 
+app.get("/repprofile/:id", function(req, res){
+
+    const id = req.params.id;
+
+    try{
+        const findRep = "SELECT company_representative.representative_id, company_representative.representative_email, company_representative.representative_name, company_representative.representative_contactNo, company.company_id, company.company_name, company.company_email, company.company_contactNo, company.company_preferences, company.company_image FROM company_representative LEFT JOIN company ON company_representative.company_id=company.company_id WHERE company_representative.representative_id = ?";
+
+        db.query(findRep, id, (err, result) => {
+            
+            // console.log(result);
+            res.send({
+                rep_id: result[0].representative_id,
+                email: result[0].representative_email,
+                name: result[0].representative_name,
+                contactNo: result[0].representative_contactNo,
+                com_id: result[0].company_id,
+                com_name: result[0].company_name,
+                com_email: result[0].company_email,
+                com_contactNo: result[0].company_contactNo,
+                preferences: result[0].company_preferences,
+                image: result[0].company_image,
+            })
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+app.put("/updatelecturer/:id", upload.single('userImage'), function(req,res) {
+
+        const id = req.params.id;
+
+    
+            const lecturerEmail = req.body.lecturerEmail;
+            const lecturerName = req.body.lecturerName;
+            const lecturerContact = req.body.lecturerContact;
+
+            if(!req.file){
+                var lecturerImage = null;
+            }
+            else{
+                var lecturerImage = 'htpp://127.0.0.1:3000/images/' + req.file.filename;
+            }
+
+            // console.log(lecturerEmail, lecturerName, lecturerContact, lecturerImage);
+
+            let updateSuccess = false;
+
+
+            try{
+                const updateLect = "UPDATE lecturer SET lecturer_email = ?, lecturer_name = ?, lecturer_contactNo = ?, lecturer_image = ? WHERE lecturer.lecturer_id = ?"
+
+                db.query(updateLect, [lecturerEmail, lecturerName, lecturerContact, lecturerImage, id], (err, result) => {
+
+
+                    if(err){
+                        console.log(err);
+                        res.json({
+                            updateSuccess: false,
+                        })            
+                    }
+                    else{
+                        res.json({
+                            updateSuccess: true,
+                        })
+                    }
+                    
+                })
+
+            }
+            catch(err){
+                console.log(err);
+            }
+
+    
+}
+)
+
 app.get("/type", function(req, res){
     const type = "SELECT * FROM project_type;"
 
@@ -156,9 +239,16 @@ app.get("/type", function(req, res){
         res.send(result);
     }
     )
+});
 
+app.get("/field", function(req, res){
+    const field = "SELECT * FROM project_fieldelective;"
 
-})
+    db.query(field, (err, result) => {
+        res.send(result);
+    }
+    )
+});
 
 app.post("/addnewprojectl", function(req,res) {
 
@@ -195,6 +285,41 @@ app.post("/addnewprojectl", function(req,res) {
     }
 })
 
+app.post("/addnewprojectr", function(req,res) {
+
+    const id = req.body.userId;
+    const title = req.body.projectTitle;
+    const information = req.body.projectInformation;
+    const status = req.body.projectStatus;
+    const type = req.body.projectType;
+    const field = req.body.projectField;
+    const owner = req.body.projectOwner;
+    let addSuccess = false;
+
+
+    try{
+        const addProjectRep = "INSERT INTO project(project_title, project_information, project_status, project_type_id, project_field_id, representative_id, project_owner) VALUES (?,?,?,?,?,?,?);"
+
+        db.query(addProjectRep, [title, information, status, type, field, id, owner], (err, result) => {
+
+            if(err){
+                res.json({
+                    addSuccess: false,
+                })            }
+            else{
+                res.json({
+                    addSuccess: true,
+                })
+            }
+            
+        })
+
+    }
+    catch(err){
+        console.log(err);
+    }
+})
+
 app.get("/lectproject/:id", function(req, res){
 
     const id = req.params.id;
@@ -212,14 +337,48 @@ app.get("/lectproject/:id", function(req, res){
     }
 });
 
+app.get("/repproject/:id", function(req, res){
+
+    const id = req.params.id;
+
+    try{
+        const findRepProject = "SELECT company_representative.representative_id, company_representative.representative_name, project.project_id, project.project_title, project.project_information, project_type.project_type_label, project_fieldelective.project_field_label FROM company_representative INNER JOIN project ON company_representative.representative_id = project.representative_id INNER JOIN project_type ON project.project_type_id = project_type.project_type_id INNER JOIN project_fieldelective ON project.project_field_id = project_fieldelective.project_field_id WHERE company_representative.representative_id = ? LIMIT 3;";
+
+        db.query(findRepProject, id, (err, result) => {
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
 app.get("/lectactivity/:id", function(req, res){
 
     const id = req.params.id;
 
     try{
-        const findLectActivity = "SELECT project_activity.project_activity_title, project.project_id FROM project INNER JOIN project_activity ON project.project_id=project_activity.project_id WHERE project.lecturer_id=? ORDER BY project_activity_id DESC LIMIT 3;;";
+        const findLectActivity = "SELECT project_activity.project_activity_title, project.project_id FROM project INNER JOIN project_activity ON project.project_id=project_activity.project_id WHERE project.lecturer_id=? ORDER BY project_activity.project_activity_id DESC LIMIT 3;";
 
         db.query(findLectActivity, id, (err, result) => {
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+app.get("/repactivity/:id", function(req, res){
+
+    const id = req.params.id;
+
+    try{
+        const findRepActivity = "SELECT project_activity.project_activity_title, project.project_id FROM project INNER JOIN project_activity ON project.project_id=project_activity.project_id WHERE project.representative_id=? ORDER BY project_activity.project_activity_id DESC LIMIT 3;";
+
+        db.query(findRepActivity, id, (err, result) => {
             res.send(result);
         }
         )
@@ -260,19 +419,52 @@ app.get("/lecturer/:userId/viewproject/:projectId", function(req, res){
     }
 });
 
-app.post("/addactivityl", function(req,res) {
+
+app.get("/representative/:userId/viewproject/:projectId", function(req, res){
+
+    // const userId = req.params.userId;
+    const projectId = req.params.projectId;
+
+    try{
+        const findProject = "SELECT * FROM project INNER JOIN project_type ON project.project_type_id=project_type.project_type_id INNER JOIN project_fieldelective ON project.project_field_id=project_fieldelective.project_field_id LEFT JOIN lecturer ON project.lecturer_id=lecturer.lecturer_id LEFT JOIN company_representative ON project.representative_id=company_representative.representative_id WHERE project.project_id = ?";
+
+        db.query(findProject, projectId, (err, result) => {
+            // console.log(result[0].lecturer_name);
+            res.send({
+                projectId: result[0].project_id,
+                projectTitle: result[0].project_title,
+                projectInformation: result[0].project_information,
+                projectStatus: result[0].project_status,
+                projectType: result[0].project_type_label,
+                projectField: result[0].project_field_label,
+                projectOwner: result[0].project_owner,
+                lecturerId: result[0].lecturer_id,
+                lecturerName: result[0].lecturer_name,
+                representativeId: result[0].representative_id,
+                representativeName: result[0].representative_name,
+            });
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+app.post("/addactivity", function(req,res) {
 
     const title = req.body.activityTitle;
     const information = req.body.activityInformation;
-    const startDate = req.body.activityStartDate;
-    const endDate = req.body.activityEndDate;
     const projectId = req.body.projectId;
 
+    // console.log(title, information, projectId);
+
     try{
-        const addActivityLect = "INSERT INTO project_activity (project_activity_title, project_activity_information, project_activity_startdate, project_activity_enddate, project_id) VALUES (?,?,?,?,?);"
+        const addActivity = "INSERT INTO project_activity (project_activity_title, project_activity_information,  project_id) VALUES (?,?,?);"
 
-        db.query(addActivityLect, [title, information, startDate, endDate, projectId], (err, result) => {
+        db.query(addActivity, [title, information, projectId], (err, result) => {
 
+            // console.log(result);
             res.send(result);
             
         })
@@ -283,7 +475,7 @@ app.post("/addactivityl", function(req,res) {
     }
 })
 
-app.post("/addattachmentl", upload.single('image'), (req,res) => {
+app.post("/addattachment", upload.single('image'), (req,res) => {
 
     if(!req.file){
         console.log("No file upload");
@@ -308,7 +500,7 @@ app.get("/:projectId/activity", function(req, res){
     // console.log(projectId);
 
     try{
-        const findProjectActivity = "SELECT project_activity.project_activity_title, project_activity.project_activity_information, project_activity.project_activity_startdate, project_activity.project_activity_enddate FROM project_activity INNER JOIN project ON project_activity.project_id=project.project_id WHERE project_activity.project_id = ?;";
+        const findProjectActivity = "SELECT project_activity.project_activity_title, project_activity.project_activity_information FROM project_activity INNER JOIN project ON project_activity.project_id=project.project_id WHERE project_activity.project_id = ?;";
 
         db.query(findProjectActivity, projectId, (err, result) => {
 

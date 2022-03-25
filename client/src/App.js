@@ -17,6 +17,9 @@ import CompanyProjectList from './Components/CompanyProjectList';
 import LecturerProjectList from './Components/LecturerProjectList';
 import YourProject from './Components/YourProject';
 import LecturerEditProject from './Components/LecturerEditProject';
+import LecturerEditProfile from './Components/LecturerEditProfile';
+import RepresentativeEditProject from './Components/RepresentativeEditProject';
+import RepresentativeAddProject from './Components/RepresentativeAddProject';
 
 function App() {
 
@@ -51,11 +54,16 @@ function App() {
         <Route path = "/representative/:id/yourproject"><YourProject /></Route>
 
         <Route path = "/lecturer/:id/lectureraddproject"><LecturerAddProject /></Route>
-        {/* <Route path = "/representative/:id/representativeaddproject"><RepresentativeAddProject /></Route> */}
+        <Route path = "/representative/:id/representativeaddproject"><RepresentativeAddProject /></Route>
 
         <Route path = "/lecturer/:id/editproject/:id"><LecturerEditProject /></Route>
+        <Route path = "/representative/:id/editproject/:id"><RepresentativeEditProject /></Route>
+
 
         <Route path = "/lecturer/:id/viewproject/:id"><ViewProject /></Route>
+        <Route path = "/representative/:id/viewproject/:id"><ViewProject /></Route>
+
+        <Route path = "/lecturer/:id/editprofile"><LecturerEditProfile/></Route>
       </Switch>
       </UserTypeContext.Provider>
       </UserContext.Provider>

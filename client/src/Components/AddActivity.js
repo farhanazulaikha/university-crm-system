@@ -2,12 +2,12 @@ import React, {useState} from 'react'
 import {Modal, Form, Button} from 'react-bootstrap'
 import Axios from 'axios'
 
-function LecturerAddActivity(props){
+function AddActivity(props){
 
     const [activityTitle, setTitle] = useState("");
     const [activityInformation, setInformation] = useState("");
-    const [activityStartDate, setStartDate] = useState(new Date());
-    const [activityEndDate, setEndDate] = useState(new Date());
+    // const [activityStartDate, setStartDate] = useState(new Date());
+    // const [activityEndDate, setEndDate] = useState(new Date());
 
     var projectId = props.itemID;
 
@@ -15,11 +15,16 @@ function LecturerAddActivity(props){
 
         e.preventDefault();
 
-        Axios.post("http://localhost:3001/addactivityl", {
+        if(activityInformation === ""){
+            setInformation("-");
+        }
+
+
+        Axios.post("http://localhost:3001/addactivity", {
             activityTitle: activityTitle,
             activityInformation: activityInformation,
-            activityStartDate: activityStartDate,
-            activityEndDate: activityEndDate,
+            // activityStartDate: activityStartDate,
+            // activityEndDate: activityEndDate,
             projectId: projectId,
         }).then((res) => {
             window.alert('Activity has been added!');
@@ -59,7 +64,7 @@ function LecturerAddActivity(props){
                         }}
                     />
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="activityStartDate">
+                {/* <Form.Group className="mb-3" controlId="activityStartDate">
                     <Form.Label>Start Date</Form.Label>
                     <Form.Control type="date" 
                         onChange = {(event) => {
@@ -74,7 +79,7 @@ function LecturerAddActivity(props){
                             setEndDate(event.target.value);
                         }}
                     />
-                </Form.Group>
+                </Form.Group> */}
                 <div className = "d-flex flex-end justify-content-end align-items-end mt-3">
                     <div className = "px-3">
                     <Button onClick={props.onHide} className = "mr-3">Close</Button>
@@ -90,4 +95,4 @@ function LecturerAddActivity(props){
     )
 }
 
-export default LecturerAddActivity;
+export default AddActivity;

@@ -84,7 +84,7 @@ function Navigation(){
                                   <NavDropdown.Item as = {Link} to = '/' onClick={signOut}>Sign Out</NavDropdown.Item>
                                 }
                                 {type === "Representative" &&
-                                  <NavDropdown.Item as = {Link} to = '/'onClick={signOut}>Your Project</NavDropdown.Item>
+                                  <NavDropdown.Item as = {Link} to = '/'onClick={signOut}>Sign Out</NavDropdown.Item>
                                 }
                               </NavDropdown>
                              
