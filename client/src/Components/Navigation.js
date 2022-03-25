@@ -4,6 +4,9 @@ import {Link} from 'react-router-dom';
 import webLogo from './../assets/logo.png';
 import { SignInContext, UserTypeContext } from './../Helper/Context';
 import './Navigation.css';
+import { BsFillPersonFill } from "react-icons/bs";
+import { BsFillChatLeftTextFill } from "react-icons/bs";
+
 
 function Navigation(){
 
@@ -13,6 +16,9 @@ function Navigation(){
     const signOut = () => {
       isSignedIn(false);
     }
+
+    const navDropdownTitle = <span><BsFillPersonFill/></span>
+    const chat = <span><BsFillChatLeftTextFill/></span>
 
     // const [userType, isUserType] = useState("");
 
@@ -25,6 +31,12 @@ function Navigation(){
                         {signedIn ?
 
                             <Nav className="right-side me-auto text-white">
+                              {type === "Lecturer" &&
+                                <Nav.Link as = {Link} to = '/lecturer/:id/chat' className="text-white p-3">{chat}</Nav.Link>
+                              }
+                              {type === "Representative" &&
+                                <Nav.Link as = {Link} to = '/representative/:id/chat' className="text-white p-3">{chat}</Nav.Link>
+                              }
                               {type === "Admin" &&
                                 <Nav.Link as = {Link} to = '/admin/:id/dashboard' className="text-white p-3">Dashboard</Nav.Link>
                               }
@@ -61,7 +73,21 @@ function Navigation(){
                               {type === "Representative" &&
                                 <Nav.Link as = {Link} to = '/representative/:id/news' className="text-white p-3">News</Nav.Link>
                               }
-                              <Nav.Link as = {Link} to = '/' className="text-white p-3" onClick={signOut}>Sign Out</Nav.Link>
+                              <NavDropdown title={navDropdownTitle} id ="nav-dropdown">
+                                {type === "Lecturer" &&
+                                  <NavDropdown.Item as = {Link} to = '/lecturer/:id/editprofile'>Edit Profile</NavDropdown.Item>
+                                }
+                                {type === "Representative" &&
+                                  <NavDropdown.Item as = {Link} to = '/representative/:id/editprofile'>Edit Profile</NavDropdown.Item>
+                                }
+                                {type === "Lecturer" &&
+                                  <NavDropdown.Item as = {Link} to = '/' onClick={signOut}>Sign Out</NavDropdown.Item>
+                                }
+                                {type === "Representative" &&
+                                  <NavDropdown.Item as = {Link} to = '/'onClick={signOut}>Your Project</NavDropdown.Item>
+                                }
+                              </NavDropdown>
+                             
                             </Nav>
 
                         :
