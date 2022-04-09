@@ -56,7 +56,7 @@ function LecturerEditProfile() {
     //     setFileName(e.target.files[0].name);
     //   };
 
-    const updateUser = (e) => {
+    const updateUser = async(e) => {
 
         e.preventDefault();
 
@@ -68,6 +68,9 @@ function LecturerEditProfile() {
         // formData.append("lecturerEmail", lecturerEmail);
         // formData.append("lecturerName", lecturerName);
         // formData.append("lecturerContact", lecturerContact);
+        if(lecturerEmail === ""){
+            setEmail(lEmail);
+        }
 
         if(lecturerName === ""){
             setFullName(lName);
@@ -78,12 +81,13 @@ function LecturerEditProfile() {
         }
         // console.log(lecturerEmail, lecturerContact);
         
-        Axios.put(`http://localhost:3001/updatelecturer/${userId}`,{
+        const re = await Axios.put(`http://localhost:3001/updatelecturer/${userId}`,{
+                userId: userId,
                 lecturerEmail: lecturerEmail,
                 lecturerName: lecturerName,
                 lecturerContact: lecturerContact,
         }).then((response) => {
-                if(response.data.updateSuccess){
+                if(response){
                     window.alert('Your profile has been updated!');
                     history.push(`/lecturer/${userId}/dashboard`)
                 }
@@ -95,11 +99,13 @@ function LecturerEditProfile() {
         
     }
 
-    const choosePreference = (e) => {
+    const choosePreference = async(e) => {
         // const checkedValue = e.target.value;
 
         // current array of options
     // const options = this.state.options
+        e.preventDefault();
+
         let index
 
         // check if the check box is checked or unchecked
@@ -112,7 +118,8 @@ function LecturerEditProfile() {
             preferenceList.splice(index, 1)
         }
 
-        console.log(preferenceList);
+
+        // console.log(preferenceList);
     // update the state with the new array of options
     // this.setState({ options: options })
 // to get the checked name

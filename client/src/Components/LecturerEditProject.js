@@ -17,27 +17,21 @@ function LecturerEditProject(){
     const [projectStatus, setProjectStatus] = useState("");
     const [projectType, setProjectType] = useState("");
     const [projectField, setProjectField] = useState("");
-    const [representativeId, setRepresentativeId] = useState("");
+    const [collaboratorId, setCollaboratorId] = useState("");
 
-    const [pType, setPType] = useState([]);
-    const [pField, setPField] = useState([]);
+    const [repList, setRepList] = useState([]);
+
+    // const [projectCode, setProjectCode] = useState("");
+    const [title, setTitle] = useState("");
+    const [information, setInformation] = useState("");
+    const [status, setStatus] = useState("");
+    const [pType, setPType] = useState("");
+    const [field, setField] = useState("");
+    const [collabId, setCollabId] = useState("");
 
     const link = window.location.pathname;
     const split = link.split("/");
     const projectId = split[4];
-
-    
-    // useEffect(() => {
-    //     Axios.get('http://localhost:3001/type').then((response) => {
-    //         setPType(response.data);
-    //     })
-    // });
-
-    // useEffect(() => {
-    //     Axios.get('http://localhost:3001/field').then((response) => {
-    //         setPField(response.data);
-    //     })
-    // });
 
     useEffect(()=>{
         Axios.get(`http://localhost:3001/lecturer/${userId}/viewproject/${projectId}`,{
@@ -51,6 +45,7 @@ function LecturerEditProject(){
             setProjectStatus(res.data.projectStatus);
             setProjectType(res.data.projectTypeId);
             setProjectField(res.data.projectFieldId);
+            setCollaboratorId(res.data.representativeId);
 
             // let pType = res.data.projectTypeId.toLowerCase();
             // let field = res.data.projectFieldId.toLowerCase();
@@ -64,40 +59,69 @@ function LecturerEditProject(){
         })
     });
 
-    // const displayType = pType.map((val) => {
-    //     return(
-    //         <option value = {val.project_type_id}>{val.project_type_label}</option>
-    //     )
-    // })
+    useEffect(() => {
+        const fetchRep = async () => {
+            const res = await Axios.get(`/lecturer/${userId}/representativelist`).then((response) =>{
+                setRepList(response.data);
+            })
+        }
 
-    const updateProject = () => {
-        // e.preventDefault();
+        fetchRep();
+    }, []);
 
-        Axios.post(`http://localhost:3001/updateproject/${projectId}`,{
+    const updateProject = async(event) => {
+        event.preventDefault();
+
+        if(title === ""){
+            setTitle(projectTitle);
+        }
+
+        if(information === ""){
+            setInformation(projectInformation);
+        }
+
+        if(status === ""){
+            setStatus(projectStatus);
+        }
+
+        if(pType === ""){
+            setPType(projectType);
+        }
+
+        if(field === ""){
+            setField(projectField);
+        }
+
+        if(collabId === ""){
+            setCollabId(collaboratorId);
+        }
+
+        const res = await Axios.put(`http://localhost:3001/lecteditproject/${projectId}`,{
                 projectId: projectId,
-                projectTitle: projectTitle,
-                projectInformation: projectInformation,
-                projectStatus: projectStatus,
-                projectType: projectType,
-                projectField: projectField,
+                projectTitle: title,
+                projectInformation: information,
+                projectStatus: status,
+                projectType: pType,
+                projectField: field,
+                collaboratorId: collabId,
         }).then((response) => {
-                if(response.data.updateSuccess){
+                // if(response.data.updateSuccess){
+                if(response){
                     window.alert('Your project has been updated!');
-                    history.push(`/lecturer/${userId}/viewproject/${projectId}`)
+                    history.push(`/lecturer/${userId}/viewproject/${projectId}`);
                 }
                 else{
-                    window.alert('Update is unsuccessful!')
+                    window.alert('Update is unsuccessful!');
                 }
+                // }
+                // else{
+                //     window.alert('Update is unsuccessful!')
+                // }
                 
             })
     }
 
-    const onChangeProjectField = (event) => {
-            setProjectField(event.target.value);
-            // console.log(event.target.value);
-    }
-
-    const backToProject = (e, projectCode) => {
+    const backToProject = (e) => {
         e.preventDefault();
 
         history.push(`/lecturer/${userId}/viewproject/${projectId}`);
@@ -114,7 +138,7 @@ function LecturerEditProject(){
             <Form.Label>Project Title</Form.Label>
               <Form.Control type="text" placeholder="Enter your project title here"  
                   onChange = {(event) => {
-                    setProjectTitle(event.target.value);
+                    setTitle(event.target.value);
                   }}
                   defaultValue = {projectTitle}
                 />
@@ -124,7 +148,7 @@ function LecturerEditProject(){
             <Form.Label>Project Information</Form.Label>
                 <Form.Control as="textarea" rows={3} placeholder="Enter your project information here"  
                   onChange = {(event) => {
-                    setProjectInformation(event.target.value);
+                    setInformation(event.target.value);
                   }}
                     defaultValue = {projectInformation}
                 />
@@ -134,7 +158,7 @@ function LecturerEditProject(){
                 <Form.Label>Project Status</Form.Label>
                 <Form.Control as="select" 
                     onChange = {(event) => {
-                        setProjectStatus(event.target.value);
+                        setStatus(event.target.value);
                     }}
                     value = {projectStatus}
                 >
@@ -149,7 +173,7 @@ function LecturerEditProject(){
                     <Form.Control as="select" 
                     value={projectType}
                     onChange = {(event) => {
-                        setProjectType(event.target.value);
+                        setPType(event.target.value);
                     }}
                 >
                     <option className = "text-muted">Select your project type here...</option>
@@ -161,11 +185,11 @@ function LecturerEditProject(){
             <Form.Group className="mb-3" controlId="projectField">
                     <Form.Label>Project Field</Form.Label>
                     <Form.Control as="select" 
-                    onChange={onChangeProjectField}
-                    // onChange = {(event) => {
-                    //     setProjectField(event.target.value);
-                    //     // console.log(event.target.value);
-                    // }}
+                    // onChange={onChangeProjectField}
+                    onChange = {(event) => {
+                        setField(event.target.value);
+                        // console.log(event.target.value);
+                    }}
                     value = {projectField}
                 >
                     <option className = "text-muted">Select your project field here...</option>
@@ -175,6 +199,32 @@ function LecturerEditProject(){
                     <option value="IC2">Media and Visual Computing</option>
                     <option value="SE1">Information Systems Development</option>
                     <option value="SE2">Specialised Systems Development</option>
+                </Form.Control>
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="projectCollaborator">
+                    <Form.Label>Collaborator</Form.Label>
+                    <Form.Control type="text" placeholder="Enter your project collaborator ID here"  
+                        onChange = {(event) => {
+                            setCollabId(event.target.value);
+                        }}
+                        defaultValue = {collaboratorId}
+                    />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="projectCol">
+                    <Form.Label>Project Field</Form.Label>
+                    <Form.Control as="select" 
+                    onChange = {(event) => {
+                        setCollabId(event.target.value);
+                    }}
+                >  
+                    <option className = "text-muted">Select your project collaborator here...</option>
+                    {repList.map((val1, key1) => {
+                        return(
+                                <option key = {key1} value = {val1.representative_id}>{val1.representative_name}</option>
+                        )
+                    })}
                 </Form.Control>
             </Form.Group>
             

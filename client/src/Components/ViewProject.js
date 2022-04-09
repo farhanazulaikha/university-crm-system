@@ -201,11 +201,11 @@ function ViewProject (){
         })
     });
 
-    const addNewComment = (e) => {
+    const addNewComment = async(e) => {
 
         e.preventDefault();
 
-        Axios.post("http://localhost:3001/addcomment", {
+        const re = await Axios.post("http://localhost:3001/addcomment", {
             comment: comment,
             userId: userId,
             userType: type,
@@ -221,23 +221,26 @@ function ViewProject (){
         history.push(`/lecturer/${userId}/editproject/${projectId}`)
     }
     
-    const uploadImage = () => {
-        // console.log(files[0]);
+    const uploadImage = async(e) => {
+
+        e.preventDefault();
 
         const formData = new FormData();
 
         formData.append("file", fileSelected);
         formData.append("upload_preset", "sudzesie");
 
-        Axios.post("https://api.cloudinary.com/v1_1/farhana19/image/upload", formData).then((response) => {
-        console.log(response);
-        uploadPicture(response);
-            // props.onHide();
+        const r = await Axios.post("https://api.cloudinary.com/v1_1/farhana19/image/upload", formData).then((response) => {
+        // console.log(response);
+        uploadPicture(response, e);
     })
     }
 
-    const uploadPicture = (res) => {
-        Axios.post("http://localhost:3001/uploadattachment",{
+    const uploadPicture = async(res, event) => {
+
+        event.preventDefault();
+
+        const resp = await Axios.post("http://localhost:3001/uploadattachment",{
             projectId: projectId,
             imageUrl: res.data.secure_url,
         }).then(() => {
@@ -506,36 +509,39 @@ function ViewProject (){
                         itemID={projectCode}
                         /> */}
                     </Row>
-                    <Row>
+                    {/* <Row> */}
                     {
                             isDiscussion
                             ?
-                            <Row className = "discussion mb-3">
+                            <Col className = "mb-3">
                                 {discussionList.map((val1, key1) => {
                                 return(
                                     <div key = {key1}>
-                                        <Col>
+                                    <Row className = "border p-3 mb-3">
+                                        <Col className = "col-3">
                                             <Image className = "user-img1" src = {user} />
                                         </Col>
-                                        <Col>
+                                        <Col className = "col-9">
                                             <Row>
-                                                {val1.lecturer_name}
-                                                {val1.representative_name}
+                                                <strong>{val1.lecturer_name}</strong>
+                                                <strong>{val1.representative_name}</strong>
+                                                {/* <i>commented...</i> */}
                                             </Row>
                                             <Row>
                                                 {val1.project_comment_info}
                                             </Row>
                                         </Col>
                                         <br/>
+                                    </Row>
                                     </div>
                                 )
                                 }
                                 )}
-                            </Row>
+                            </Col>
                             :
                             <p className = "text-center">No comment has been made yet!</p>
                     }
-                    </Row>
+                    {/* </Row> */}
                     
                 </Card.Body>
             </Card>

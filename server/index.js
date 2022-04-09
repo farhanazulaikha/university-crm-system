@@ -250,10 +250,10 @@ app.get("/repprofile/:id", function(req, res){
     }
 });
 
-app.put("/updatelecturer/:id", function(req,res) {
+app.put("/updatelecturer/:id", (req,res) => {
 
     // upload.single('userImage')
-        const id = req.params.userId;
+        const id = req.body.userId;
         const lecturerEmail = req.body.lecturerEmail;
         const lecturerName = req.body.lecturerName;
         const lecturerContact = req.body.lecturerContact;
@@ -265,9 +265,9 @@ app.put("/updatelecturer/:id", function(req,res) {
         //     var lecturerImage = 'htpp://127.0.0.1:3000/public/images/' + req.file.filename;
         // }
 
-        console.log(lecturerEmail, lecturerName, lecturerContact);
+        // console.log(lecturerEmail, lecturerName, lecturerContact);
 
-        let updateSuccess = false;
+        // let updateSuccess = false;
 
 
         try{
@@ -278,15 +278,11 @@ app.put("/updatelecturer/:id", function(req,res) {
                 // console.log(result);
 
                 if(err){
-                    console.log(err);
-                    res.json({
-                        updateSuccess: false,
-                    })            
+                    console.log(err);           
                 }
                 else{
-                    res.json({
-                        updateSuccess: true,
-                    })
+
+                    res.send(result);
                 }
                 
             })
@@ -298,39 +294,46 @@ app.put("/updatelecturer/:id", function(req,res) {
 }
 )
 
-app.post("/updateproject/:id", function(req,res) {
+app.put("/lecteditproject/:projectid", (req,res) => {
 
-    // upload.single('userImage')
-        const id = req.params.projectId;
+        const projectId = req.body.projectId;
         const projectTitle = req.body.projectTitle;
         const projectInformation = req.body.projectInformation;
         const projectStatus = req.body.projectStatus;
         const projectType = req.body.projectType;
         const projectField = req.body.projectField;
+        const collaboratorId = req.body.collaboratorId;
 
-        // console.log(lecturerEmail, lecturerName, lecturerContact);
+        // console.log(projectTitle, projectInformation);
 
         let updateSuccess = false;
 
 
         try{
-            const updateProject = "UPDATE project SET project_title = ?, project_information = ?, project_status = ?, project_type_id = ?, project_field_id = ? WHERE lecturer_id = ?;"
+            const updateProject = "UPDATE project SET project_title = ?, project_information = ?, project_status = ?, project_type_id = ?, project_field_id = ?, representative_id = ? WHERE project_id = ?;"
 
-            db.query(updateProject, [projectTitle, projectInformation, projectStatus, projectType, projectField, id], (err, result) => {
+            db.query(updateProject, [projectTitle, projectInformation, projectStatus, projectType, projectField, collaboratorId, projectId], (err, result) => {
 
                 // console.log(result);
 
                 if(err){
-                    console.log(err);
-                    res.json({
-                        updateSuccess: false,
-                    })            
+                    console.log("Error: ", err);
                 }
                 else{
-                    res.json({
-                        updateSuccess: true,
-                    })
+                    res.send(result);
                 }
+
+                // if(err){
+                //     console.log(err);
+                //     res.send({
+                //         updateSuccess: false,
+                //     })            
+                // }
+                // else{
+                //     res.send({
+                //         updateSuccess: true,
+                //     })
+                // }
                 
             })
 
@@ -338,7 +341,6 @@ app.post("/updateproject/:id", function(req,res) {
         catch(err){
             console.log(err);
         }
-
     
 }
 )
@@ -643,7 +645,7 @@ app.post("/addattachment", upload.single('image'), (req,res) => {
     }
 })
 
-app.post("/uploadattachment", function(req,res) {
+app.post("/uploadattachment", (req,res) => {
 
     const projectId = req.body.projectId;
     const url = req.body.imageUrl;
@@ -702,14 +704,12 @@ app.get("/:projectId/attachment", function(req, res){
     }
 });
 
-app.post("/addcomment", function(req,res) {
+app.post("/addcomment",(req,res) => {
 
     const comment = req.body.comment;
     const userId = req.body.userId;
     const userType = req.body.userType;
     const projectId = req.body.projectId;
-
-    // console.log(userType);
 
     try{
 
@@ -742,6 +742,25 @@ app.get("/:projectId/discussion", function(req, res){
         db.query(findProjectDiscussion, projectId, (err, result) => {
 
             // console.log(result);
+
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+app.get("/lecturer/:id/representativelist", (req, res) => {
+
+    // const id = req.params.id;
+    // console.log(projectId);
+
+    try{
+        const findRepList = "SELECT company_representative.representative_id, company_representative.representative_name FROM company_representative;";
+
+        db.query(findRepList, (err, result) => {
 
             res.send(result);
         }
