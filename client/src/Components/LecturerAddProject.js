@@ -1,6 +1,6 @@
 import React, {useContext, useState, useEffect} from 'react'
 import { UserContext, UserTypeContext } from '../Helper/Context';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Card} from 'react-bootstrap';
 import Axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
@@ -21,38 +21,42 @@ function LecturerAddProject(){
     const [pType, setPType] = useState([]);
     const [pField, setPField] = useState([]);
 
-    useEffect(() => {
-        Axios.get('http://localhost:3001/type').then((response) => {
-            setPType(response.data);
-        })
-    });
+    // useEffect(() => {
+    //     Axios.get('http://localhost:3001/type').then((response) => {
+    //         setPType(response.data);
+    //     })
+    // });
 
-    useEffect(() => {
-        Axios.get('http://localhost:3001/field').then((response) => {
-            setPField(response.data);
-        })
-    });
+    // useEffect(() => {
+    //     Axios.get('http://localhost:3001/field').then((response) => {
+    //         setPField(response.data);
+    //     })
+    // });
 
     const addNewProject = (e) => {
 
         e.preventDefault();
 
-        let pType = projectType.toUpperCase();
-        let field = projectField.toUpperCase();
-        let status = projectStatus.charAt(0).toUpperCase() + projectStatus.slice(1);
+        // let pType = projectType.toUpperCase();
+        // let field = projectField.toUpperCase();
+        // let status = projectStatus.charAt(0).toUpperCase() + projectStatus.slice(1);
 
         Axios.post("http://localhost:3001/addnewprojectl", {
             userId: userId,
             projectTitle: projectTitle,
             projectInformation: projectInformation,
-            projectStatus: status,
-            projectType: pType,
-            projectField: field,
+            projectStatus: projectStatus,
+            projectType: projectType,
+            projectField: projectField,
             projectOwner: type,
         })
         .then((res) => {
+
+            // const projectId = res.data.projectId;
+
             if(res.data.addSuccess){
                 window.alert("Successfully added new project!");
+                // history.push(`/lecturer/${userId}/viewproject/${projectId}`)
                 history.push(`/lecturer/${userId}/dashboard`);
             }
             else{
@@ -60,9 +64,16 @@ function LecturerAddProject(){
             }
         })};
 
+        const backToProfile = (e) => {
+            e.preventDefault();
+
+            history.push(`/lecturer/${userId}/dashboard`);
+        }
+
     return(
-        <div>
-            <Form onSubmit = {addNewProject} className = "border m-3 p-5">
+        <div className="d-flex justify-content-center">
+            <Card style={{ width: '70%' }}>
+            <Form onSubmit = {addNewProject} className = "m-3 p-5" >
             <h3>Add Project</h3>
 
             <hr/>
@@ -93,8 +104,8 @@ function LecturerAddProject(){
                     }}
                 >
                     <option className = "text-muted">Select your project status here...</option>
-                    <option value="available">Available</option>
-                    <option value="taken">Taken</option>
+                    <option value="Available">Available</option>
+                    <option value="Taken">Taken</option>
                 </Form.Control>
             </Form.Group>
             
@@ -105,12 +116,15 @@ function LecturerAddProject(){
                         setType(event.target.value);
                     }}
                 >
-                    <option className = "text-muted">Select your project type here...</option>
-                    {pType.map((val, key) => {
+                    {/* <option className = "text-muted">Select your project type here...</option> */}
+                    {/* {pType.map((val, key) => {
                         return(
                                 <option key = {key} value = {val.project_type_id}>{val.project_type_label}</option>
                         )
-                    })}
+                    })} */}
+                    <option className = "text-muted">Select your project type here...</option>
+                    <option value="RND">Research and Development</option>
+                    <option value="TNL">Teaching and Learning</option>
                 </Form.Control>
             </Form.Group>
             
@@ -122,23 +136,33 @@ function LecturerAddProject(){
                     }}
                 >
                     <option className = "text-muted">Select your project field here...</option>
+                    <option value="CI1">Embedded Systems</option>
+                    <option value="CI2">Information Security and Assurance</option>
+                    <option value="IC1">Intelligent Systems and Data Analytics</option>
+                    <option value="IC2">Media and Visual Computing</option>
+                    <option value="SE1">Information Systems Development</option>
+                    <option value="SE2">Specialised Systems Development</option>
+                    {/* <option className = "text-muted">Select your project field here...</option>
                     {pField.map((val1, key1) => {
                         return(
                                 <option key = {key1} value = {val1.project_field_id}>{val1.project_field_label}</option>
                         )
-                    })}
+                    })} */}
                 </Form.Control>
             </Form.Group>
             
 
 
             <div className = "d-flex flex-end  justify-content-end align-items-end mt-3">
+            <Button className = "d-flex flex-end justify-content-end align-items-end mx-3" type="submit" onClick = {backToProfile}>Cancel</Button>
             <Button className = "d-flex flex-end justify-content-end align-items-end" variant="primary" type="submit">
                 Add
             </Button>
+            
           </div>
 
           </Form>
+          </Card>
         </div>
     )
 }

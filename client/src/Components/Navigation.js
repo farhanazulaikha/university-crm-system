@@ -32,27 +32,27 @@ function Navigation(){
 
                             <Nav className="right-side me-auto text-white">
                               {type === "Lecturer" &&
-                                <Nav.Link as = {Link} to = '/lecturer/:id/chat' className="text-white p-3">{chat}</Nav.Link>
+                                <Nav.Link as = {Link} to = '/lecturer/:id/chat' className="text-white p-3 navStyle">{chat}</Nav.Link>
                               }
                               {type === "Representative" &&
-                                <Nav.Link as = {Link} to = '/representative/:id/chat' className="text-white p-3">{chat}</Nav.Link>
+                                <Nav.Link as = {Link} to = '/representative/:id/chat' className="text-white p-3 navStyle">{chat}</Nav.Link>
                               }
                               {type === "Admin" &&
-                                <Nav.Link as = {Link} to = '/admin/:id/dashboard' className="text-white p-3">Dashboard</Nav.Link>
+                                <Nav.Link as = {Link} to = '/admin/:id/dashboard' className="text-white p-3 navStyle">Users</Nav.Link>
                               }
                               {type === "Lecturer" &&
-                                <Nav.Link as = {Link} to = '/lecturer/:id/dashboard' className="text-white p-3">Dashboard</Nav.Link>
+                                <Nav.Link as = {Link} to = '/lecturer/:id/dashboard' className="text-white p-3 navStyle">Dashboard</Nav.Link>
                               }
                               {type === "Representative" &&
-                                <Nav.Link as = {Link} to = '/representative/:id/dashboard' className="text-white p-3">Dashboard</Nav.Link>
+                                <Nav.Link as = {Link} to = '/representative/:id/dashboard' className="text-white p-3 navStyle">Dashboard</Nav.Link>
                               }
                               {type === "Lecturer" &&
-                              <Nav.Link as = {Link} to = '/lecturer/:id/companylist' className="text-white p-3">Company</Nav.Link>
+                              <Nav.Link as = {Link} to = '/lecturer/:id/companylist' className="text-white p-3 navStyle">Company</Nav.Link>
                               }
                               {type === "Representative" &&
-                                <Nav.Link as = {Link} to = '/representative/:id/lecturerlist' className="text-white p-3">Lecturer</Nav.Link>
+                                <Nav.Link as = {Link} to = '/representative/:id/lecturerlist' className="text-white p-3 navStyle">Lecturer</Nav.Link>
                               }
-                              <NavDropdown title="Project" id ="nav-dropdown">
+                              <NavDropdown title="Project" id ="nav-dropdown" className="navStyle">
                                 {type === "Lecturer" &&
                                   <NavDropdown.Item as = {Link} to = '/lecturer/:id/companyprojectlist'>Company Project</NavDropdown.Item>
                                 }
@@ -68,17 +68,20 @@ function Navigation(){
                               </NavDropdown>
                               
                               {type === "Lecturer" &&
-                              <Nav.Link as = {Link} to = '/lecturer/:id/news' className="text-white p-3">News</Nav.Link>
+                              <Nav.Link as = {Link} to = '/lecturer/:id/news' className="text-white p-3 navStyle">News</Nav.Link>
                               }
                               {type === "Representative" &&
-                                <Nav.Link as = {Link} to = '/representative/:id/news' className="text-white p-3">News</Nav.Link>
+                                <Nav.Link as = {Link} to = '/representative/:id/news' className="text-white p-3 navStyle">News</Nav.Link>
                               }
-                              <NavDropdown title={navDropdownTitle} id ="nav-dropdown">
+                              <NavDropdown title={navDropdownTitle} id ="nav-dropdown" className="navStyle">
                                 {type === "Lecturer" &&
                                   <NavDropdown.Item as = {Link} to = '/lecturer/:id/editprofile'>Edit Profile</NavDropdown.Item>
                                 }
                                 {type === "Representative" &&
                                   <NavDropdown.Item as = {Link} to = '/representative/:id/editprofile'>Edit Profile</NavDropdown.Item>
+                                }
+                                {type === "Admin" &&
+                                  <NavDropdown.Item as = {Link} to = '/' onClick={signOut}>Sign Out</NavDropdown.Item>
                                 }
                                 {type === "Lecturer" &&
                                   <NavDropdown.Item as = {Link} to = '/' onClick={signOut}>Sign Out</NavDropdown.Item>
@@ -92,8 +95,8 @@ function Navigation(){
 
                         :
                             <Nav className="right-side me-auto text-white">
-                                <Nav.Link as = {Link} to = '/' className="text-white p-3">Sign In</Nav.Link>
-                                <Nav.Link as = {Link} to = '/signup' className="p-3 text-white">Sign Up</Nav.Link>
+                                <Nav.Link as = {Link} to = '/' className="text-white p-3 navStyle" activeClassName="navStyle--active">Sign In</Nav.Link>
+                                <Nav.Link as = {Link} to = '/signup' className="p-3 text-white navStyle" activeClassName="navStyle--active">Sign Up</Nav.Link>
                             </Nav>
                         }
                             

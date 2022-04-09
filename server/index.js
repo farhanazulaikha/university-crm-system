@@ -128,6 +128,74 @@ app.post("/signin", function(req,res) {
     }
 })
 
+app.get("/lectureractive", function(req, res){
+
+    const status = "Active";
+
+    try{
+        const lectList = "SELECT lecturer_id, lecturer_name, lecturer_email, lecturer_status FROM lecturer WHERE lecturer_status=? ORDER BY lecturer_id DESC;"
+
+        db.query(lectList, status, (err, result) => {
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+})
+
+app.get("/lecturerinactive", function(req, res){
+
+    const status = "Inactive";
+
+    try{
+        const lectList = "SELECT lecturer_id, lecturer_name, lecturer_email, lecturer_status FROM lecturer WHERE lecturer_status=? ORDER BY lecturer_id DESC;"
+
+        db.query(lectList, status, (err, result) => {
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+})
+
+app.get("/representativeactive", function(req, res){
+
+    const status = "Active";
+
+    try{
+        const repList = "SELECT representative_id, representative_name, representative_email, representative_status FROM company_representative WHERE representative_status=? ORDER BY representative_id DESC;"
+
+        db.query(repList, status, (err, result) => {
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+})
+
+app.get("/representativeinactive", function(req, res){
+
+    const status = "Inactive";
+
+    try{
+        const repList = "SELECT representative_id, representative_name, representative_email, representative_status FROM company_representative WHERE representative_status=? ORDER BY representative_id DESC;"
+
+        db.query(repList, status, (err, result) => {
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+})
+
 app.get("/lectprofile/:id", function(req, res){
 
     const id = req.params.id;
@@ -182,51 +250,94 @@ app.get("/repprofile/:id", function(req, res){
     }
 });
 
-app.put("/updatelecturer/:id", upload.single('userImage'), function(req,res) {
+app.put("/updatelecturer/:id", function(req,res) {
 
-        const id = req.params.id;
+    // upload.single('userImage')
+        const id = req.params.userId;
+        const lecturerEmail = req.body.lecturerEmail;
+        const lecturerName = req.body.lecturerName;
+        const lecturerContact = req.body.lecturerContact;
 
-    
-            const lecturerEmail = req.body.lecturerEmail;
-            const lecturerName = req.body.lecturerName;
-            const lecturerContact = req.body.lecturerContact;
+        // if(!req.file){
+        //     var lecturerImage = null;
+        // }
+        // else{
+        //     var lecturerImage = 'htpp://127.0.0.1:3000/public/images/' + req.file.filename;
+        // }
 
-            if(!req.file){
-                var lecturerImage = null;
-            }
-            else{
-                var lecturerImage = 'htpp://127.0.0.1:3000/images/' + req.file.filename;
-            }
+        console.log(lecturerEmail, lecturerName, lecturerContact);
 
-            // console.log(lecturerEmail, lecturerName, lecturerContact, lecturerImage);
-
-            let updateSuccess = false;
-
-
-            try{
-                const updateLect = "UPDATE lecturer SET lecturer_email = ?, lecturer_name = ?, lecturer_contactNo = ?, lecturer_image = ? WHERE lecturer.lecturer_id = ?"
-
-                db.query(updateLect, [lecturerEmail, lecturerName, lecturerContact, lecturerImage, id], (err, result) => {
+        let updateSuccess = false;
 
 
-                    if(err){
-                        console.log(err);
-                        res.json({
-                            updateSuccess: false,
-                        })            
-                    }
-                    else{
-                        res.json({
-                            updateSuccess: true,
-                        })
-                    }
-                    
-                })
+        try{
+            const updateLect = "UPDATE lecturer SET lecturer_email = ?, lecturer_name = ?, lecturer_contactNo = ? WHERE lecturer_id = ?;"
 
-            }
-            catch(err){
-                console.log(err);
-            }
+            db.query(updateLect, [lecturerEmail, lecturerName, lecturerContact, id], (err, result) => {
+
+                // console.log(result);
+
+                if(err){
+                    console.log(err);
+                    res.json({
+                        updateSuccess: false,
+                    })            
+                }
+                else{
+                    res.json({
+                        updateSuccess: true,
+                    })
+                }
+                
+            })
+
+        }
+        catch(err){
+            console.log(err);
+        }
+}
+)
+
+app.post("/updateproject/:id", function(req,res) {
+
+    // upload.single('userImage')
+        const id = req.params.projectId;
+        const projectTitle = req.body.projectTitle;
+        const projectInformation = req.body.projectInformation;
+        const projectStatus = req.body.projectStatus;
+        const projectType = req.body.projectType;
+        const projectField = req.body.projectField;
+
+        // console.log(lecturerEmail, lecturerName, lecturerContact);
+
+        let updateSuccess = false;
+
+
+        try{
+            const updateProject = "UPDATE project SET project_title = ?, project_information = ?, project_status = ?, project_type_id = ?, project_field_id = ? WHERE lecturer_id = ?;"
+
+            db.query(updateProject, [projectTitle, projectInformation, projectStatus, projectType, projectField, id], (err, result) => {
+
+                // console.log(result);
+
+                if(err){
+                    console.log(err);
+                    res.json({
+                        updateSuccess: false,
+                    })            
+                }
+                else{
+                    res.json({
+                        updateSuccess: true,
+                    })
+                }
+                
+            })
+
+        }
+        catch(err){
+            console.log(err);
+        }
 
     
 }
@@ -273,6 +384,7 @@ app.post("/addnewprojectl", function(req,res) {
                 })            }
             else{
                 res.json({
+                    projectId: result.project_id,
                     addSuccess: true,
                 })
             }
@@ -308,6 +420,7 @@ app.post("/addnewprojectr", function(req,res) {
                 })            }
             else{
                 res.json({
+                    // projectId: result.project_id,
                     addSuccess: true,
                 })
             }
@@ -328,6 +441,40 @@ app.get("/lectproject/:id", function(req, res){
         const findLectProject = "SELECT lecturer.lecturer_id, lecturer.lecturer_name, project.project_id, project.project_title, project.project_information, project_type.project_type_label, project_fieldelective.project_field_label FROM lecturer INNER JOIN project ON lecturer.lecturer_id = project.lecturer_id INNER JOIN project_type ON project.project_type_id = project_type.project_type_id INNER JOIN project_fieldelective ON project.project_field_id = project_fieldelective.project_field_id WHERE lecturer.lecturer_id = ? LIMIT 3;";
 
         db.query(findLectProject, id, (err, result) => {
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+app.get("/lecturerproject/:id", function(req, res){
+
+    const id = req.params.id;
+
+    try{
+        const findLectProject = "SELECT lecturer.lecturer_id, lecturer.lecturer_name, project.project_id, project.project_title, project.project_information, project_type.project_type_label, project_fieldelective.project_field_label FROM lecturer INNER JOIN project ON lecturer.lecturer_id = project.lecturer_id INNER JOIN project_type ON project.project_type_id = project_type.project_type_id INNER JOIN project_fieldelective ON project.project_field_id = project_fieldelective.project_field_id WHERE lecturer.lecturer_id = ?;";
+
+        db.query(findLectProject, id, (err, result) => {
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+app.get("/repproject/:id", function(req, res){
+
+    const id = req.params.id;
+
+    try{
+        const findRepProject = "SELECT company_representative.representative_id, company_representative.representative_name, project.project_id, project.project_title, project.project_information, project_type.project_type_label, project_fieldelective.project_field_label FROM company_representative INNER JOIN project ON company_representative.representative_id = project.representative_id INNER JOIN project_type ON project.project_type_id = project_type.project_type_id INNER JOIN project_fieldelective ON project.project_field_id = project_fieldelective.project_field_id WHERE company_representative.representative_id = ?;";
+
+        db.query(findRepProject, id, (err, result) => {
             res.send(result);
         }
         )
@@ -403,7 +550,9 @@ app.get("/lecturer/:userId/viewproject/:projectId", function(req, res){
                 projectTitle: result[0].project_title,
                 projectInformation: result[0].project_information,
                 projectStatus: result[0].project_status,
+                projectTypeId: result[0].project_type_id,
                 projectType: result[0].project_type_label,
+                projectFieldId: result[0].project_field_id,
                 projectField: result[0].project_field_label,
                 projectOwner: result[0].project_owner,
                 lecturerId: result[0].lecturer_id,
@@ -482,7 +631,7 @@ app.post("/addattachment", upload.single('image'), (req,res) => {
     }
     else{
         // console.log(req.file.filename);
-        var imgsrc = 'htpp://127.0.0.1:3000/images/' + req.file.filename;
+        var imgsrc = 'http://127.0.0.1:3000/public/images' + req.file.filename;
         var id = req.body.projectId;
         var insertImage = "INSERT INTO project_attachment(project_attachment_url, project_id) VALUES (?, ?);"
 
@@ -491,6 +640,27 @@ app.post("/addattachment", upload.single('image'), (req,res) => {
             res.send(result);
             // console.log("File uploaded");
         })
+    }
+})
+
+app.post("/uploadattachment", function(req,res) {
+
+    const projectId = req.body.projectId;
+    const url = req.body.imageUrl;
+
+    try{
+        const addPicture = "INSERT INTO project_attachment(project_attachment_url, project_id) VALUES (?, ?);"
+
+        db.query(addPicture, [url, projectId], (err, result) => {
+
+            // console.log(result);
+            res.send(result);
+            
+        })
+
+    }
+    catch(err){
+        console.log(err);
     }
 })
 
@@ -503,6 +673,25 @@ app.get("/:projectId/activity", function(req, res){
         const findProjectActivity = "SELECT project_activity.project_activity_title, project_activity.project_activity_information FROM project_activity INNER JOIN project ON project_activity.project_id=project.project_id WHERE project_activity.project_id = ?;";
 
         db.query(findProjectActivity, projectId, (err, result) => {
+
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+app.get("/:projectId/attachment", function(req, res){
+
+    const projectId = req.params.projectId;
+    // console.log(projectId);
+
+    try{
+        const findProjectAttachment = "SELECT project_attachment.project_attachment_url, project_attachment.project_attachment_name FROM project_attachment INNER JOIN project ON project_attachment.project_id=project.project_id WHERE project_attachment.project_id = ?;";
+
+        db.query(findProjectAttachment, projectId, (err, result) => {
 
             res.send(result);
         }
@@ -548,9 +737,11 @@ app.get("/:projectId/discussion", function(req, res){
     const projectId = req.params.projectId;
 
     try{
-        const findProjectDiscussion = "SELECT project_comment.project_comment_id, project_comment.project_comment_info, project_comment.project_id, lecturer.lecturer_name, company_representative.representative_name FROM project_comment INNER JOIN project ON project_comment.project_id=project.project_id LEFT JOIN lecturer ON project.lecturer_id=lecturer.lecturer_id LEFT JOIN company_representative ON project.representative_id=company_representative.representative_id WHERE project_comment.project_id = ?;";
+        const findProjectDiscussion = "SELECT project_comment.project_comment_id, project_comment.project_comment_info, project_comment.project_id, lecturer.lecturer_name, company_representative.representative_name FROM project_comment LEFT JOIN lecturer ON project_comment.lecturer_id=lecturer.lecturer_id LEFT JOIN company_representative ON project_comment.representative_id=company_representative.representative_id WHERE project_comment.project_id = ?;"
 
         db.query(findProjectDiscussion, projectId, (err, result) => {
+
+            // console.log(result);
 
             res.send(result);
         }
@@ -580,6 +771,25 @@ app.get("/lecturer/:id/companylist", function(req, res){
     }
 });
 
+app.get("/representative/:id/lecturerlist", function(req, res){
+
+    // const id = req.params.id;
+    // console.log(projectId);
+
+    try{
+        const findLecturerList = "SELECT lecturer.lecturer_id, lecturer.lecturer_name, lecturer.lecturer_email, lecturer.lecturer_contactNo, lecturer.lecturer_preferences FROM lecturer;"
+
+        db.query(findLecturerList, (err, result) => {
+
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
 app.get("/lecturer/:id/companyprojectlist", function(req, res){
 
     const status = "Available";
@@ -591,6 +801,92 @@ app.get("/lecturer/:id/companyprojectlist", function(req, res){
         // const findCompanyProjectList = "SELECT lecturer.lecturer_id, lecturer.lecturer_name, project.project_id, project.project_title, project.project_information, project_type.project_type_label,project_fieldelective.project_field_label FROM project INNER JOIN lecturer ON project.lecturer_id=lecturer.lecturer_id INNER JOIN project_type ON project.project_type_id=project_type.project_type_id INNER JOIN project_fieldelective ON project.project_field_id=project_fieldelective.project_field_id WHERE project.project_status=? AND project.project_owner=?";
 
         db.query(findCompanyProjectList, [status, owner], (err, result) => {
+
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+app.get("/representative/:id/lecturerprojectlist", function(req, res){
+
+    const status = "Available";
+    const owner = "Lecturer";
+
+    try{
+        const findLecturerProjectList = "SELECT project.project_id, project.project_title, project.project_information, project_type.project_type_label,project_fieldelective.project_field_label, project.lecturer_id, lecturer.lecturer_name FROM project INNER JOIN lecturer ON project.lecturer_id=lecturer.lecturer_id INNER JOIN project_type ON project.project_type_id=project_type.project_type_id INNER JOIN project_fieldelective ON project.project_field_id=project_fieldelective.project_field_id WHERE project.project_status=? AND project.project_owner=?";
+
+
+        db.query(findLecturerProjectList, [status, owner], (err, result) => {
+
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+app.post("/addpost", function(req,res) {
+
+    const post = req.body.post;
+    const userId = req.body.userId;
+    const userType = req.body.userType;
+    const date = req.body.date;
+    const time = req.body.time;
+
+    // const saveDate = DATE(date,'%d-%m-%y');
+
+    // console.log(post, userId, userType);
+
+    try{
+
+        if(userType === "Lecturer"){
+            var addPost = "INSERT INTO lecturer_news(lecturer_news_title, date, time, lecturer_id) VALUES (?,?,?,?);"
+        }
+        // else if(userType === "Representative"){
+        //     var addPost = "INSERT INTO representative_news(representative_news_title, representative_id) VALUES (?,?);"
+        // }
+
+        db.query(addPost, [post, date, time, userId], (err, result) => {
+
+            // console.log(err);
+            res.send(result);
+
+        })
+
+    }
+    catch(err){
+        console.log(err);
+    }
+})
+
+app.get("/lecturerpost", function(req, res){
+    try{
+        const findNewsList = "SELECT lecturer_news.lecturer_news_id, lecturer_news.lecturer_news_title, lecturer_news.date, lecturer_news.time FROM lecturer_news;"
+
+        db.query(findNewsList, (err, result) => {
+
+            // console.log(result);
+
+            res.send(result);
+        }
+        )
+    }
+    catch(err){
+        console.log(err);
+    }
+});
+
+app.get("/representativepost", function(req, res){
+    try{
+        const findNewsList = "SELECT company_news.company_news_id, company_news.company_news_title, company_news.date, company_news.time FROM company_news ORDER BY lecturer_news_id DESC;"
+
+        db.query(findNewsList, (err, result) => {
 
             res.send(result);
         }

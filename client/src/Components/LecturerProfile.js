@@ -42,19 +42,19 @@ function LecturerProfile(){
 
     return(
         <div className = "text-center">
-            <Card className = "p-5">
+            <Card className = "p-5 card2">
             <Row>
                 {userImg
                     ?
-                    <Image className="user-img" src={lecturerImage}></Image>
+                    <Image className="user-img" src={lecturerImage} />
                     : 
-                    <Image className = "rounded user-img" src = {user}></Image>
+                    <Image className = "rounded user-img" src = {user} />
                 }
                 
             </Row>
             <Row>
                 <Col>
-                <Row>
+                <Row className="text-center">
                 {lecturerName}
                 </Row>
                 <Row>

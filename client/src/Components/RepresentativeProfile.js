@@ -42,7 +42,7 @@ function RepresentativeProfile(){
 
     return(
         <div className = "text-center">
-            <Card className = "p-5">
+            <Card className = "p-5 card2">
             <Row>
                 {userImg
                     ?

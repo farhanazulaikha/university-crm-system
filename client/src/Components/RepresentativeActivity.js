@@ -3,6 +3,7 @@ import { Card, Row, Col, Button } from 'react-bootstrap';
 import { UserContext} from './../Helper/Context';
 import { useHistory } from 'react-router-dom';
 import Axios from 'axios';
+import './Profile.css';
 
 function RepresentativeActivity() {
 
@@ -36,7 +37,7 @@ function RepresentativeActivity() {
 
   return (
     <div>
-      <Card className = "p-1">
+      <Card className = "p-1 card1">
                 <Card.Title className = "px-3 pt-3">
                     Your Activity
                     <hr/>

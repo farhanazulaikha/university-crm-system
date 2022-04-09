@@ -25,6 +25,8 @@ function LecturerDashboard(){
                 </Row>
                 </Card.Body>
             </Card>
+            <br/>
+            <br/>
         </div>
     )
 }

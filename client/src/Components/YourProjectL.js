@@ -1,29 +1,29 @@
 import React, {useEffect, useContext, useState} from 'react'
-import { UserContext} from './../Helper/Context';
+import { UserContext} from '../Helper/Context';
 import {Card, Table, Button} from 'react-bootstrap';
 import Axios from 'axios';
-import SearchProject from './SearchProject';
+// import SearchProject from './SearchProject';
 import { useHistory } from 'react-router-dom';
 
-function CompanyProjectList(){
+function YourProjectL(){
 
     const history = useHistory();
 
     const {userId, setUserId} = useContext(UserContext);
 
-    const [companyProject, isCompanyProject] = useState (false);
-    const [companyProjectList, setCompanyProjectList] = useState([]);
+    const [lectProject, isLectProject] = useState (false);
+    const [lectProjectList, setLectProjectList] = useState([]);
 
     useEffect(()=>{
 
-        Axios.get(`http://localhost:3001/lecturer/${userId}/companyprojectlist`)
+        Axios.get(`http://localhost:3001/lecturerproject/${userId}`)
         .then((res) => {
             if(res.data.length > 0){
-                isCompanyProject(true);
-                setCompanyProjectList(res.data);
+                isLectProject(true);
+                setLectProjectList(res.data);
             }
             else{
-                isCompanyProject(false);
+                isLectProject(false);
             }
         });
     }, [userId]);
@@ -36,18 +36,17 @@ function CompanyProjectList(){
         <div>
             <Card className = "m-5 p-1">
                 <Card.Title className = "px-3 pt-3">
-                    Project List
+                    Your Project List
                     <hr/>
                 </Card.Title>
                 <Card.Body className = "mx-3">
-                {companyProject &&
+                {/* {companyProject &&
                     <SearchProject
                     projectList={companyProjectList}
                     filteredList={setCompanyProjectList}
-                    // setCompanyProjectList={companyProjectList}
                     />
-                }
-                {companyProject &&
+                } */}
+                {lectProject &&
                 
                     <Table striped bordered hover>
                         <thead>
@@ -57,10 +56,9 @@ function CompanyProjectList(){
                             <th>Information</th>
                             <th>Type</th>
                             <th>Field</th>
-                            <th>Posted by</th>
                         </tr>
                         </thead>
-                        {companyProjectList.map((val, key) => {
+                        {lectProjectList.map((val, key) => {
                         return (
                             <tbody key={key}>
                             <tr>
@@ -71,7 +69,6 @@ function CompanyProjectList(){
                                 <td>{val.project_information}</td>
                                 <td>{val.project_type_label}</td>
                                 <td>{val.project_field_label}</td>
-                                <td>{val.representative_name}</td>
                             </tr>
                             </tbody>
                         );
@@ -79,7 +76,7 @@ function CompanyProjectList(){
                     </Table>
                 }
 
-                        {!companyProject &&
+                        {!lectProject &&
                             <p className = "text-center">No project in the list yet!</p>
                         }
                 </Card.Body>
@@ -88,4 +85,4 @@ function CompanyProjectList(){
     )
 }
 
-export default CompanyProjectList;
+export default YourProjectL;

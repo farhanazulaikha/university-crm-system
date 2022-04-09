@@ -20,3 +20,13 @@
     float:left;
     margin-bottom: 10px;
 }
+
+.card1{
+    height: 270px;
+    width:auto;
+}
+
+.card2{
+    height: 500px;
+    width:auto;
+}

@@ -15,17 +15,19 @@ function LecturerEditProfile() {
 
     const [userImg, setUserImg] = useState(false);
 
-    // const [lEmail, setLEmail] = useState("");
-    // const [lName, setLFullName] = useState("");
-    // const [lContact, setLContact] = useState("");
+    const [lEmail, setLEmail] = useState("");
+    const [lName, setLFullName] = useState("");
+    const [lContact, setLContact] = useState("");
     const [lImage, setImage] = useState("");
 
     const [lecturerEmail, setEmail] = useState("");
     const [lecturerName, setFullName] = useState("");
     const [lecturerContact, setContact] = useState("");
 
-    const [file, setFile] = useState();
-    const [fileName, setFileName] = useState("");
+    var [file, setFile] = useState();
+    var [fileName, setFileName] = useState("");
+
+    const [preferenceList, setPreference] = useState([]);
 
     useEffect(()=>{
 
@@ -33,9 +35,9 @@ function LecturerEditProfile() {
             id: userId,
         })
         .then((res) => {
-            setEmail(res.data.email);
-            setFullName(res.data.name);
-            setContact(res.data.contactNo);
+            setLEmail(res.data.email);
+            setLFullName(res.data.name);
+            setLContact(res.data.contactNo);
             setImage(res.data.image);
 
             if(res.data.image === null){
@@ -49,29 +51,38 @@ function LecturerEditProfile() {
     })
 
 
-    const saveImage = (e) => {
-        setFile(e.target.files[0]);
-        setFileName(e.target.files[0].name);
-      };
+    // const saveImage = (e) => {
+    //     setFile(e.target.files[0]);
+    //     setFileName(e.target.files[0].name);
+    //   };
 
-    const updateUser = async (e) => {
+    const updateUser = (e) => {
 
         e.preventDefault();
 
-        const formData = new FormData();
+        // const formData = new FormData();
 
-        formData.append("userImage", file);
-        formData.append("fileName", fileName);
-        formData.append("userEmail", lecturerEmail);
-        formData.append("userFullName", lecturerName);
-        formData.append("userContact", lecturerContact);
+        // formData.append("userImage", file);
+        // formData.append("fileName", fileName);
+        // formData.append("userId", userId);
+        // formData.append("lecturerEmail", lecturerEmail);
+        // formData.append("lecturerName", lecturerName);
+        // formData.append("lecturerContact", lecturerContact);
 
-        // console.log(lecturerName);
+        if(lecturerName === ""){
+            setFullName(lName);
+        }
 
-        try{
-            const res = await Axios.put(`http://localhost:3001/updatelecturer/${userId}`,
-                formData
-            ).then((response) => {
+        if(lecturerContact === ""){
+            setContact(lContact);
+        }
+        // console.log(lecturerEmail, lecturerContact);
+        
+        Axios.put(`http://localhost:3001/updatelecturer/${userId}`,{
+                lecturerEmail: lecturerEmail,
+                lecturerName: lecturerName,
+                lecturerContact: lecturerContact,
+        }).then((response) => {
                 if(response.data.updateSuccess){
                     window.alert('Your profile has been updated!');
                     history.push(`/lecturer/${userId}/dashboard`)
@@ -81,10 +92,32 @@ function LecturerEditProfile() {
                 }
                 
             })
-        } catch(ex){
-            console.log(ex);
-        }
+        
     }
+
+    const choosePreference = (e) => {
+        // const checkedValue = e.target.value;
+
+        // current array of options
+    // const options = this.state.options
+        let index
+
+        // check if the check box is checked or unchecked
+        if (e.target.checked) {
+        // add the numerical value of the checkbox to options array
+            preferenceList.push(e.target.value)
+        } else {
+            // or remove the value from the unchecked checkbox from the array
+            index = preferenceList.indexOf(+e.target.value)
+            preferenceList.splice(index, 1)
+        }
+
+        console.log(preferenceList);
+    // update the state with the new array of options
+    // this.setState({ options: options })
+// to get the checked name
+// const checkedName = e.target.name;
+        }
 
   return (
     <div className="d-flex justify-content-center">
@@ -94,7 +127,7 @@ function LecturerEditProfile() {
 
             <hr/>
 
-            <Form.Group className="mb-3" controlId="userImage">
+            {/* <Form.Group className="mb-3" controlId="userImage">
                     <Form.Label className="fw-bold">Upload user picture</Form.Label>
                     <br/>
                     <div className = "pb-3">Your current profile picture:<br/>
@@ -107,15 +140,15 @@ function LecturerEditProfile() {
                     </div>
                     <div>
                     <Form.Control type="file" name='userImage' placeholder="Upload your attachment here"
-                        onChange = {saveImage}
+                        // onChange = {saveImage}
                     />
                     </div>
-            </Form.Group>
+            </Form.Group> */}
             
             <Form.Group className="mb-3" controlId="userEmail">
             <Form.Label className="fw-bold">Email address</Form.Label>
               <Form.Control type="email" placeholder="Enter your email here"  
-                defaultValue={lecturerEmail}
+                defaultValue={lEmail}
                   onChange = {(event) => {
                     setEmail(event.target.value);
                   }}
@@ -127,18 +160,18 @@ function LecturerEditProfile() {
             <Form.Group className="mb-3" controlId="userFullName">
                     <Form.Label className="fw-bold">Full Name</Form.Label>
                     <Form.Control type="text" placeholder="Enter full name here" 
-                    defaultValue={lecturerName}
+                    defaultValue={lName}
                     onChange = {(event) => {
                       setFullName(event.target.value);
                     }}
-                                        />
+                    />
                     {/* {lecturerName} */}
             </Form.Group>
             
             <Form.Group className="mb-3" controlId="userContact">
                     <Form.Label className="fw-bold">Contact Number</Form.Label>
                     <Form.Control type="number" placeholder="Enter contact number here" 
-                    defaultValue={lecturerContact}
+                    defaultValue={lContact}
                     onChange = {(event) => {
                       setContact(event.target.value);
                     }}
@@ -155,6 +188,8 @@ function LecturerEditProfile() {
                             name="group1"
                             type={type}
                             id="ArtificialIntelligence"
+                            value="Artificial Intelligence"
+                            onChange={choosePreference}
                         />
                         <Form.Check
                             inline
@@ -162,6 +197,8 @@ function LecturerEditProfile() {
                             name="group1"
                             type={type}
                             id="MachineLearning"
+                            value="Machine Learning"
+                            onChange={choosePreference}
                         />
                         <Form.Check
                             inline
@@ -169,6 +206,8 @@ function LecturerEditProfile() {
                             name="group1"
                             type={type}
                             id="NaturalLanguageProcessing"
+                            value="Natural Language Processing"
+                            onChange={choosePreference}
                         />
                         </div>
                     ))}
@@ -180,6 +219,8 @@ function LecturerEditProfile() {
                             name="group2"
                             type={type}
                             id="MultimediaSystem"
+                            value="Multimedia System"
+                            onChange={choosePreference}
                         />
                         <Form.Check
                             inline
@@ -187,6 +228,8 @@ function LecturerEditProfile() {
                             name="group2"
                             type={type}
                             id="ComputerGraphics"
+                            value="Computer Graphics"
+                            onChange={choosePreference}
                         />
                         <Form.Check
                             inline
@@ -194,6 +237,8 @@ function LecturerEditProfile() {
                             name="group2"
                             type={type}
                             id="VisualProcessing"
+                            value="Visual Processing"
+                            onChange={choosePreference}
                         />
                         </div>
                     ))}
@@ -205,6 +250,8 @@ function LecturerEditProfile() {
                             name="group3"
                             type={type}
                             id="Networking"
+                            value="Networking"
+                            onChange={choosePreference}
                         />
                         <Form.Check
                             inline
@@ -212,6 +259,8 @@ function LecturerEditProfile() {
                             name="group3"
                             type={type}
                             id="Cloud Computing"
+                            value="Cloud Computing"
+                            onChange={choosePreference}
                         />
                         <Form.Check
                             inline
@@ -219,6 +268,8 @@ function LecturerEditProfile() {
                             name="group3"
                             type={type}
                             id="InternetofThings"
+                            value="Internet of Things"
+                            onChange={choosePreference}
                         />
                         </div>
                     ))}
@@ -229,14 +280,18 @@ function LecturerEditProfile() {
                             label="Cybersecurity"
                             name="group4"
                             type={type}
-                            id="Cryptography"
+                            id="Cybersecurity"
+                            value="Cybersecurity"
+                            onChange={choosePreference}
                         />
                         <Form.Check
                             inline
                             label="Forensics"
-                            name="group1"
+                            name="group4"
                             type={type}
-                            id={`inline-${type}-2`}
+                            id="Forensics"
+                            value="Forensics"
+                            onChange={choosePreference}
                         />
                         <Form.Check
                             inline
@@ -244,6 +299,8 @@ function LecturerEditProfile() {
                             name="group4"
                             type={type}
                             id="Cryptography"
+                            value="Cryptography"
+                            onChange={choosePreference}
                         />
                         </div>
                     ))}
@@ -255,6 +312,8 @@ function LecturerEditProfile() {
                             name="group5"
                             type={type}
                             id="Database"
+                            value="Database"
+                            onChange={choosePreference}
                         />
                         <Form.Check
                             inline
@@ -262,6 +321,8 @@ function LecturerEditProfile() {
                             name="group5"
                             type={type}
                             id="EnterpriseArchitecture"
+                            value="Enterprise Architecture"
+                            onChange={choosePreference}
                         />
                         <Form.Check
                             inline
@@ -269,6 +330,8 @@ function LecturerEditProfile() {
                             name="group5"
                             type={type}
                             id="InformationSystems"
+                            value="Information Systems"
+                            onChange={choosePreference}
                         />
                         </div>
                     ))}
@@ -280,6 +343,8 @@ function LecturerEditProfile() {
                             name="group6"
                             type={type}
                             id="SoftwareDevelopment"
+                            value="Software Development"
+                            onChange={choosePreference}
                         />
                         <Form.Check
                             inline
@@ -287,6 +352,8 @@ function LecturerEditProfile() {
                             name="group6"
                             type={type}
                             id="WebDevelopment"
+                            value="Web Development"
+                            onChange={choosePreference}
                         />
                         <Form.Check
                             inline
@@ -294,6 +361,8 @@ function LecturerEditProfile() {
                             name="group6"
                             type={type}
                             id="MobileandGameDevelopment"
+                            value="Mobile and Game Development"
+                            onChange={choosePreference}
                         />
                         </div>
                     ))}

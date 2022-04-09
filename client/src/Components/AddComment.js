@@ -1,5 +1,5 @@
 import React, {useState, useContext} from 'react'
-import {Form, Button} from 'react-bootstrap'
+import {Form, Button, Modal} from 'react-bootstrap'
 import Axios from 'axios'
 import { UserContext, UserTypeContext } from './../Helper/Context';
 
@@ -9,6 +9,10 @@ function AddComment(props){
     const {type, isUserType} = useContext(UserTypeContext);
 
     const [comment, setComment] = useState("");
+
+    const [showComment, setShowComment] = useState(false);
+    const handleClose = () => setShowComment(false);
+
 
     var projectId = props.itemID;
 
@@ -22,7 +26,7 @@ function AddComment(props){
             userType: type,
             projectId: projectId,
         }).then((res) => {
-            window.alert('Comment has been added!');
+            setShowComment(true);
         })
 
     }
@@ -42,6 +46,18 @@ function AddComment(props){
                     <Button type="submit">Post</Button>
                 </div>
             </Form>
+
+            <Modal show={showComment} onHide={handleClose}>
+                <Modal.Header closeButton>
+                <Modal.Title>SUCCESSFUL</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Your comment has been posted!</Modal.Body>
+                <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                    Close
+                </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     )
 }

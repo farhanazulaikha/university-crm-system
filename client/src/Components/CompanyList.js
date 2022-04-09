@@ -1,7 +1,9 @@
 import React, {useEffect, useContext, useState} from 'react'
 import { UserContext} from './../Helper/Context';
-import {Card, Table} from 'react-bootstrap';
+import {Card, Table, Row} from 'react-bootstrap';
 import Axios from 'axios';
+import ReactPaginate from "react-paginate";
+import './CompanyList.css'
 
 function CompanyList(){
 
@@ -9,6 +11,8 @@ function CompanyList(){
 
     const [company, isCompany] = useState (false);
     const [companyList, setCompanyList] = useState([]);
+    // const [companies, setCompanies] = useState(companyList.slice(0, 50));
+    const [pageNumber, setPageNumber] = useState(0);
 
     useEffect(()=>{
 
@@ -24,6 +28,30 @@ function CompanyList(){
         });
     }, [userId]);
 
+    const companyPerPage = 10;
+    const pagesVisited = pageNumber * companyPerPage;
+
+    // const displayCompany = companyList
+    //     .slice(pagesVisited, pagesVisited + companyPerPage)
+    //     .map((val) => {
+    //     return (
+    //         <div className="company">
+    //         <td>{val.company_name}</td>
+    //         <td>{val.company_email}</td>
+    //         <td>{val.company_contactNo}</td>
+    //         <td>{val.company_preferences}</td>
+    //         <td>{val.category_label}</td>
+    //         <td>{val.sector_label}</td>
+    //         </div>
+    //     );
+    // });
+
+    const pageCount = Math.ceil(companyList.length / companyPerPage);
+
+    const changePage = ({ selected }) => {
+        setPageNumber(selected);
+    };
+
     return(
         <div>
             <Card className = "m-5 p-1">
@@ -33,11 +61,10 @@ function CompanyList(){
                 </Card.Title>
                 <Card.Body className = "mx-3">
                 {company &&
-                
+                <Row>
                     <Table striped bordered hover>
                         <thead>
                         <tr>
-                            {/* <th>No.</th> */}
                             <th>Name</th>
                             <th>Email</th>
                             <th>Contact Number</th>
@@ -46,10 +73,11 @@ function CompanyList(){
                             <th>Sector</th>
                         </tr>
                         </thead>
-                        {companyList.map((val, key) => {
+                        {companyList.slice(pagesVisited, pagesVisited + companyPerPage).map((val, key) => {
                         return (
                             <tbody key={key}>
                             <tr>
+                                {/* {displayCompany} */}
                                 <td>{val.company_name}</td>
                                 <td>{val.company_email}</td>
                                 <td>{val.company_contactNo}</td>
@@ -61,6 +89,19 @@ function CompanyList(){
                         );
                         })}
                     </Table>
+                    <Row className="mb-3">
+                    </Row>
+                    <ReactPaginate
+                    previousLabel={"Previous"}
+                    nextLabel={"Next"}
+                    pageCount={pageCount}
+                    onPageChange={changePage}
+                    containerClassName={"paginationBttns"}
+                    previousLinkClassName={"previousBttn"}
+                    nextLinkClassName={"nextBttn"}
+                    activeClassName={"paginationActive"}
+                  />
+                </Row>
                 }
 
                         {!company &&

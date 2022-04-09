@@ -69,7 +69,7 @@ function SignUp(){
                     }}
                     required
                     />
-                <Button className = "showPBtn" onClick = {togglePassword}>Show</Button>
+                <Button className = "showPBtn signUpBtn" onClick = {togglePassword}>Show</Button>
                 </InputGroup>
             </Form.Group>
 
@@ -104,6 +104,7 @@ function SignUp(){
                     <option value="representative">Company representative</option>
                 </Form.Control>
             </Form.Group>
+            
             
 
 

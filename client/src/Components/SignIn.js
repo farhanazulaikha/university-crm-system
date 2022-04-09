@@ -83,7 +83,7 @@ function SignIn(){
                   }}
                   required
                   />
-              <Button className = "showPBtn" onClick = {togglePassword}>Show</Button>
+              <Button className = "showPBtn signInBtn" onClick = {togglePassword}>Show</Button>
                 </InputGroup>
             </div>
 
