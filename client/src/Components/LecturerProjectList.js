@@ -1,9 +1,9 @@
 import React, {useEffect, useContext, useState} from 'react'
 import { UserContext} from './../Helper/Context';
-import {Card, Table, Button} from 'react-bootstrap';
+import {Card, Table, Button, Row, Form} from 'react-bootstrap';
 import Axios from 'axios';
-import SearchProject from './SearchProject';
 import { useHistory } from 'react-router-dom';
+import ReactPaginate from "react-paginate";
 
 function LecturerProjectList(){
 
@@ -13,6 +13,13 @@ function LecturerProjectList(){
 
     const [lecturerProject, isLecturerProject] = useState (false);
     const [lecturerProjectList, setLecturerProjectList] = useState([]);
+
+    const [pageNumber, setPageNumber] = useState(0);
+
+    // const [projectList, setProjectList] = useState([]);
+    const [projectName, setProjectName] = useState("");
+
+    
 
     useEffect(()=>{
 
@@ -26,33 +33,44 @@ function LecturerProjectList(){
                 isLecturerProject(false);
             }
         });
-    }, [userId]);
+    }, []);
 
     const showProject = (event, projectId) => {
         history.push(`/representative/${userId}/viewproject/${projectId}`)
     }
 
-    return(
-        <div>
-            <Card className = "m-5 p-1">
-                <Card.Title className = "px-3 pt-3">
-                    Project List
-                    <hr/>
-                </Card.Title>
-                <Card.Body className = "mx-3">
-                {/* {lecturerProject &&
-                    <SearchProject
-                    projectList={lecturerProjectList}
-                    filteredList={setCompanyProjectList}
-                    setCompanyProjectList={companyProjectList}
-                    />
-                } */}
-                {lecturerProject &&
-                
-                    <Table striped bordered hover>
+    const projectPerPage = 10;
+    const pagesVisited = pageNumber * projectPerPage;
+
+    const pageCount = Math.ceil(lecturerProjectList.length / projectPerPage);
+
+    const changePage = ({ selected }) => {
+        setPageNumber(selected);
+    };
+
+    let handleFilter = (event) => {
+
+        var searchWord = event.target.value.toLowerCase();
+        setProjectName(searchWord);
+        
+      };
+
+      function List(props) {
+
+        const newFilter = (lecturerProjectList).filter((el) => {
+
+            if(props.input === ''){
+                return el;
+            }
+            else{
+                return el.project_title.toLowerCase().includes(props.input);
+            }
+        })
+
+        return(
+            <Table striped bordered hover>
                         <thead>
-                        <tr>
-                            {/* <th>No.</th> */}
+                        <tr style={{color:'white', backgroundColor:'#104271'}}>
                             <th>Title</th>
                             <th>Information</th>
                             <th>Type</th>
@@ -60,11 +78,12 @@ function LecturerProjectList(){
                             <th>Posted by</th>
                         </tr>
                         </thead>
-                        {lecturerProjectList.map((val, key) => {
+                
+                        {newFilter.slice(pagesVisited, pagesVisited + projectPerPage).map((val, key) => {
                         return (
                             <tbody key={key}>
-                            <tr>
-                            <td><Button variant="link" className = "btn btn-link d-flex justify-content-start"
+                            <tr style={{backgroundColor:'#e7ecf0'}}>
+                            <td><Button variant="link" className = "text-start"
                                         onClick={(event) => {
                                             showProject(event, val.project_id);
                             }}>{val.project_title}</Button></td>
@@ -77,6 +96,45 @@ function LecturerProjectList(){
                         );
                         })}
                     </Table>
+            )
+      }
+
+    return(
+        <div>
+            <Card className = "m-5 p-1">
+                <Card.Title className = "px-3 pt-3">
+                    Project List
+                    <hr/>
+                </Card.Title>
+                <Card.Body className = "mx-3">
+                {lecturerProject &&
+                    <Row>
+                        <Form>
+                        <Form.Label>Search for project:</Form.Label>
+                            <Form.Group className="mb-3" controlId="projectTitle">
+                                <Form.Control type="text" placeholder="Enter project title here..."  
+                                    onChange={handleFilter}
+                                />
+                            </Form.Group>
+                        </Form>
+                    </Row>
+                }
+                {lecturerProject &&
+                    <div>
+                    <List input={projectName} />
+                    <Row className="mb-3">
+                    </Row>
+                    <ReactPaginate
+                    previousLabel={"Previous"}
+                    nextLabel={"Next"}
+                    pageCount={pageCount}
+                    onPageChange={changePage}
+                    containerClassName={"paginationBttns"}
+                    previousLinkClassName={"previousBttn"}
+                    nextLinkClassName={"nextBttn"}
+                    activeClassName={"paginationActive"}
+                    />
+                    </div>
                 }
 
                         {!lecturerProject &&

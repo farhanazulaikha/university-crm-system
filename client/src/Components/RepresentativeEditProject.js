@@ -1,6 +1,6 @@
 import React, {useContext, useState, useEffect} from 'react'
 import { UserContext, UserTypeContext } from '../Helper/Context';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Card } from 'react-bootstrap';
 import Axios from 'axios';
 import { useHistory } from 'react-router-dom';
 function RepresentativeEditProject() {
@@ -15,28 +15,33 @@ function RepresentativeEditProject() {
     const [projectStatus, setProjectStatus] = useState("");
     const [projectType, setProjectType] = useState("");
     const [projectField, setProjectField] = useState("");
-    const [lecturerId, setLecturerId] = useState("");
+    const [collaboratorId, setCollaboratorId] = useState("");
 
-    const [pType, setPType] = useState([]);
-    const [pField, setPField] = useState([]);
+    const [title, setTitle] = useState("");
+    const [information, setInformation] = useState("");
+    const [status, setStatus] = useState("");
+    const [pType, setPType] = useState("");
+    const [field, setField] = useState("");
+    const [collabId, setCollabId] = useState("");
 
     const link = window.location.pathname;
     const split = link.split("/");
     const projectId = split[4];
 
-    
+    const [lecturerList, setLecturerList] = useState([]);
 
-    useEffect(() => {
-        Axios.get('http://localhost:3001/type').then((response) => {
-            setPType(response.data);
-        })
+    useEffect(()=>{
+
+        getLecturer();
     });
 
-    useEffect(() => {
-      Axios.get('http://localhost:3001/field').then((response) => {
-          setPField(response.data);
-      })
-  });
+    function getLecturer() {
+        Axios.get(`http://localhost:3001/representative/${userId}/lecturerlist`)
+      .then(response => {
+          setLecturerList(response.data);
+        });
+    };
+    
 
     useEffect(()=>{
         Axios.get(`http://localhost:3001/representative/${userId}/viewproject/${projectId}`,{
@@ -47,14 +52,43 @@ function RepresentativeEditProject() {
             setProjectTitle(res.data.projectTitle);
             setProjectInformation(res.data.projectInformation);
             setProjectStatus(res.data.projectStatus);
-            setProjectType(res.data.projectType);
-            setProjectField(res.data.projectField);
+            setProjectType(res.data.projectTypeId);
+            setProjectField(res.data.projectFieldId);
+            setCollaboratorId(res.data.lecturerId);
+
         })
-    });
+    },[]);
+
+    const updateProject = async(event) => {
+        event.preventDefault();
+
+
+
+        const res = await Axios.put(`http://localhost:3001/repeditproject/${projectId}`,{
+                projectId: projectId,
+                projectTitle: title,
+                projectInformation: information,
+                projectStatus: status,
+                projectType: pType,
+                projectField: field,
+                collaboratorId: collabId,
+        }).then((response) => {
+                if(response){
+                    window.alert('Your project has been updated!');
+                    history.push(`/representative/${userId}/viewproject/${projectId}`);
+                }
+                else{
+                    window.alert('Update is unsuccessful!');
+                }
+                
+                
+            })
+    }
 
   return (
-    <div>
-      <Form className = "border m-3 p-5">
+      <div className="d-flex justify-content-center">
+            <Card style={{ width: '70%' }}>
+            <Form onSubmit = {updateProject} className = "m-3 p-5">
             <h3>Edit Project</h3>
             <hr/>
             
@@ -62,9 +96,9 @@ function RepresentativeEditProject() {
             <Form.Label>Project Title</Form.Label>
               <Form.Control type="text" placeholder="Enter your project title here"  
                   onChange = {(event) => {
-                    setProjectTitle(event.target.value);
+                    setTitle(event.target.value);
                   }}
-                  value = {projectTitle}
+                  defaultValue = {projectTitle}
                 />
             </Form.Group>
             
@@ -72,9 +106,9 @@ function RepresentativeEditProject() {
             <Form.Label>Project Information</Form.Label>
                 <Form.Control as="textarea" rows={3} placeholder="Enter your project information here"  
                   onChange = {(event) => {
-                    setProjectInformation(event.target.value);
+                    setInformation(event.target.value);
                   }}
-                  value = {projectInformation}
+                    defaultValue = {projectInformation}
                 />
             </Form.Group>
 
@@ -82,30 +116,28 @@ function RepresentativeEditProject() {
                 <Form.Label>Project Status</Form.Label>
                 <Form.Control as="select" 
                     onChange = {(event) => {
-                        setProjectStatus(event.target.value);
+                        setStatus(event.target.value);
                     }}
                     value = {projectStatus}
                 >
                     <option className = "text-muted">Select your project status here...</option>
-                    <option value="available">Available</option>
-                    <option value="taken">Taken</option>
+                    <option value="Available">Available</option>
+                    <option value="Taken">Taken</option>
                 </Form.Control>
             </Form.Group>
             
             <Form.Group className="mb-3" controlId="projectType">
                     <Form.Label>Project Type</Form.Label>
                     <Form.Control as="select" 
+                    
                     onChange = {(event) => {
-                        setProjectType(event.target.value);
+                        setPType(event.target.value);
                     }}
                     value={projectType}
                 >
                     <option className = "text-muted">Select your project type here...</option>
-                    {pType.map((val, key) => {
-                        return(
-                                <option key = {key} value = {val.project_type_id}>{val.project_type_label}</option>
-                        )
-                    })}
+                    <option value="RND">Research and Development</option>
+                    <option value="TNL">Teaching and Learning</option>
                 </Form.Control>
             </Form.Group>
             
@@ -113,28 +145,45 @@ function RepresentativeEditProject() {
                     <Form.Label>Project Field</Form.Label>
                     <Form.Control as="select" 
                     onChange = {(event) => {
-                        setProjectField(event.target.value);
+                        setField(event.target.value);
                     }}
                     value = {projectField}
                 >
-                  <option className = "text-muted">Select your project field here...</option>
-                    {pField.map((val1, key1) => {
+                    <option className = "text-muted">Select your project field here...</option>
+                    <option value="CI1">Embedded Systems</option>
+                    <option value="CI2">Information Security and Assurance</option>
+                    <option value="IC1">Intelligent Systems and Data Analytics</option>
+                    <option value="IC2">Media and Visual Computing</option>
+                    <option value="SE1">Information Systems Development</option>
+                    <option value="SE2">Specialised Systems Development</option>
+                </Form.Control>
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="projectCol">
+                    <Form.Label>Collaborator</Form.Label>
+                    <Form.Control as="select" 
+                    value = {collaboratorId}
+                    onChange = {(event) => {
+                        setCollabId(event.target.value);
+                    }}
+                >  
+                    <option className = "text-muted">Select your collaborator here...</option>
+                    {lecturerList.map((val1, key1) => {
                         return(
-                                <option key = {key1} value = {val1.project_field_id}>{val1.project_field_label}</option>
+                            <option key = {key1} value = {val1.lecturer_id}>{val1.lecturer_name}</option>
                         )
                     })}
                 </Form.Control>
             </Form.Group>
-            
-
 
             <div className = "d-flex flex-end  justify-content-end align-items-end mt-3">
-            <Button className = "d-flex flex-end justify-content-end align-items-end" variant="primary" type="submit">
+            <Button style={{color:'white', backgroundColor:'#104271'}} className = "d-flex flex-end justify-content-end align-items-end" variant="primary" type="submit">
                 Update
             </Button>
           </div>
 
           </Form>
+          </Card>
     </div>
   )
 }

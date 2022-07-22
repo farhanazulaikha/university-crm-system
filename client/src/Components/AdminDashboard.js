@@ -1,6 +1,6 @@
 import React, {useEffect, useContext, useState} from 'react';
 import { UserContext} from './../Helper/Context';
-import {Card, Table, Row, Tabs, Tab, Nav, Col} from 'react-bootstrap';
+import {Card, Table, Row, Tabs, Tab, Nav, Col, Button, Modal} from 'react-bootstrap';
 import Axios from 'axios';
 import ReactPaginate from "react-paginate";
 
@@ -8,19 +8,20 @@ function AdminDashboard(){
 
     const {userId, setUserId} = useContext(UserContext);
 
-    const [lecturer, isLecturer] = useState (false);
-    const [lecturerList, setLecturerList] = useState([]);
+    const [lect, isLect] = useState (false);
+    const [lectList, setLectList] = useState([]);
 
-    const [lecturerInactive, isLecturerInactive] = useState (false);
-    const [lecturerListInactive, setLecturerListInactive] = useState([]);
+    const [rep, isRep] = useState (false);
+    const [repList, setRepList] = useState([]);
 
-    const [representative, isRepresentative] = useState (false);
-    const [representativeList, setRepresentativeList] = useState([]);
+    const [modalAccept, setModalAccept] = useState(false);
+    const closeAccept = () => setModalAccept(false);
 
-    const [representativeInactive, isRepresentativeInactive] = useState (false);
-    const [representativeListInactive, setRepresentativeListInactive] = useState([]);
+    const [modalReject, setModalReject] = useState(false);
+    const closeReject = () => setModalReject(false);
 
-    const [active, setActive] = useState (false);
+    const [lectId, setLectId] = useState ("");
+    const [repId, setRepId] = useState ("");
 
     const [pageNumber, setPageNumber] = useState(0);
     const [pageNumber2, setPageNumber2] = useState(0);
@@ -29,321 +30,261 @@ function AdminDashboard(){
     const [pageNumber3, setPageNumber3] = useState(0);
 
 
-    useEffect(()=>{
-
-        Axios.get(`http://localhost:3001/lectureractive`)
+    useEffect(()=> {
+        Axios.get('http://localhost:3001/lecturerrecord')
         .then((res) => {
-
             if(res.data.length > 0){
-                isLecturer(true);
-                setLecturerList(res.data);
+                isLect(true);
+                setLectList(res.data);
             }
             else{
-                isLecturer(false);
+                isLect(false);
             }
         });
-    }, [userId]);
+    },[lectList]);
 
-    useEffect(()=>{
-
-        Axios.get(`http://localhost:3001/lecturerinactive`)
+    useEffect(()=> {
+        Axios.get('http://localhost:3001/reprecord')
         .then((res) => {
-
             if(res.data.length > 0){
-                isLecturerInactive(true);
-                setLecturerListInactive(res.data);
+                isRep(true);
+                setRepList(res.data);
             }
             else{
-                isLecturerInactive(false);
+                isRep(false);
             }
         });
-    }, [userId]);
+    },[repList]);
+    
+    const acceptUser = (e, lecturer_id) => {
 
-    useEffect(()=>{
+        e.preventDefault();
 
-        Axios.get(`http://localhost:3001/representativeactive`)
-        .then((res) => {
+        Axios.put(`http://localhost:3001/updatelectstatus/${userId}`,{
+            userId: lecturer_id,
+            lecturer_status: "Active",
+        }).then((res) => {
+                setModalAccept(true);
+            
+        })
+    }
 
-            if(res.data.length > 0){
-                isRepresentative(true);
-                setRepresentativeList(res.data);
-            }
-            else{
-                isRepresentative(false);
-            }
-        });
-    }, [userId]);
+    const acceptUser1 = (e, representative_id) => {
 
-    useEffect(()=>{
+        e.preventDefault();
 
-        Axios.get(`http://localhost:3001/representativeinactive`)
-        .then((res) => {
+        Axios.put(`http://localhost:3001/updaterepstatus/${userId}`,{
+            userId: representative_id,
+            representative_status: "Active",
+        }).then((res) => {
+                setModalAccept(true);
+            
+        })
 
-            if(res.data.length > 0){
-                isRepresentativeInactive(true);
-                setRepresentativeListInactive(res.data);
-            }
-            else{
-                isRepresentativeInactive(false);
-            }
-        });
-    }, [userId]);
+
+    }
+
+    const rejectUser = (e, lecturer_id) => {
+
+        e.preventDefault();
+
+        Axios.put(`http://localhost:3001/updatelectstatus/${userId}`,{
+            userId: lecturer_id,
+            lecturer_status: "Inactive",
+        }).then((res) => {
+                setModalReject(true);
+        })
+    }
+
+    const rejectUser1 = (e, representative_id) => {
+
+        e.preventDefault();
+
+        Axios.put(`http://localhost:3001/updaterepstatus/${userId}`,{
+            userId: representative_id,
+            representative_status: "Inactive",
+        }).then((res) => {
+                setModalReject(true);
+        })
+    }
 
     const lecturerPerPage = 10;
     const pagesVisited = pageNumber * lecturerPerPage;
 
-    const pageCount = Math.ceil(lecturerList.length / lecturerPerPage);
+    const pageCount = Math.ceil(lectList.length / lecturerPerPage);
 
     const changePage = ({ selected }) => {
         setPageNumber(selected);
-    };
-
-    const lecturerPerPageIn = 10;
-    const pagesVisited2 = pageNumber2 * lecturerPerPageIn;
-
-    const pageCount2 = Math.ceil(lecturerListInactive.length / lecturerPerPageIn);
-
-    const changePage2 = ({ selected }) => {
-        setPageNumber2(selected);
     };
 
 
     const repPerPage = 10;
     const pagesVisited1 = pageNumber1 * repPerPage;
 
-    const pageCount1 = Math.ceil(representativeList.length / repPerPage);
+    const pageCount1 = Math.ceil(repList.length / repPerPage);
 
     const changePage1 = ({ selected }) => {
         setPageNumber1(selected);
     };
 
-    const repPerPageIn = 10;
-    const pagesVisited3 = pageNumber3 * repPerPageIn;
-
-    const pageCount3 = Math.ceil(representativeListInactive.length / repPerPageIn);
-
-    const changePage3 = ({ selected }) => {
-        setPageNumber3(selected);
-    };
 
     return(
         <div className = "m-5">
             <Card className="m-3 p-5">
                 <Card.Title>List of Users</Card.Title>
                 <hr/>
-            <Tabs defaultActiveKey="lecturer" id="uncontrolled-tab-example" className="mb-3 justify-content-center">
+                <Tabs
+                defaultActiveKey="lecturer"
+                transition={false}
+                id="noanim-tab-example"
+                className="mb-3 justify-content-center"
+                >
                 <Tab eventKey="lecturer" title="Lecturer">
-                <Tab.Container id="left-tabs-example" defaultActiveKey="first">
+                    {lect ?
                     <Row>
-                        <Col sm={3}>
-                        <Nav variant="pills" className="flex-column">
-                            <Nav.Item>
-                            <Nav.Link eventKey="first">Active</Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                            <Nav.Link eventKey="second">Inactive</Nav.Link>
-                            </Nav.Item>
-                        </Nav>
-                        </Col>
-                        <Col sm={9}>
-                        <Tab.Content>
-                            <Tab.Pane eventKey="first">
-                            {lecturer &&
+                        <Table striped bordered hover>
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Action(Allow/Reject User Access?)</th>
+                        </tr>
+                        </thead>
+                        {lectList.slice(pagesVisited, pagesVisited + lecturerPerPage).map((val, key) => {
+                        return (
+                            <tbody key={key}>
+                            <tr>
+                                <td>{val.lecturer_name}</td>
+                                <td>{val.lecturer_email}</td>
+                                <td>{val.lecturer_status}</td>
+                                <td>{val.lecturer_status === 'Pending' ?
                                 <Row>
-                                    <Table striped bordered hover>
-                                        <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                        </thead>
-                                        {lecturerList.slice(pagesVisited, pagesVisited + lecturerPerPage).map((val, key) => {
-                                        return (
-                                            <tbody key={key}>
-                                            <tr>
-                                                <td>{val.lecturer_name}</td>
-                                                <td>{val.lecturer_email}</td>
-                                                <td>{val.lecturer_status}</td>
-                                            </tr>
-                                            </tbody>
-                                        );
-                                        })}
-                                    </Table>
-                                    <Row className="mb-3">
-                                    </Row>
-                                    <ReactPaginate
-                                    previousLabel={"Previous"}
-                                    nextLabel={"Next"}
-                                    pageCount={pageCount}
-                                    onPageChange={changePage}
-                                    containerClassName={"paginationBttns"}
-                                    previousLinkClassName={"previousBttn"}
-                                    nextLinkClassName={"nextBttn"}
-                                    activeClassName={"paginationActive"}
-                                />
-                                </Row>
-                            }
-
-                            {!lecturer &&
-                                <p className = "text-center">No lecturer in the list yet!</p>
-                            }
-                           </Tab.Pane>
-                            <Tab.Pane eventKey="second">
-                            {lecturerInactive &&
-                                <Row>
-                                    <Table striped bordered hover>
-                                        <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Status</th>
-                                        </tr>
-                                        </thead>
-                                        {lecturerListInactive.slice(pagesVisited2, pagesVisited2 + lecturerPerPageIn).map((val, key) => {
-                                        return (
-                                            <tbody key={key}>
-                                            <tr>
-                                                <td>{val.lecturer_name}</td>
-                                                <td>{val.lecturer_email}</td>
-                                                <td>{val.lecturer_status}</td>
-                                            </tr>
-                                            </tbody>
-                                        );
-                                        })}
-                                    </Table>
-                                    <Row className="mb-3">
-                                    </Row>
-                                    <ReactPaginate
-                                    previousLabel={"Previous"}
-                                    nextLabel={"Next"}
-                                    pageCount={pageCount2}
-                                    onPageChange={changePage2}
-                                    containerClassName={"paginationBttns"}
-                                    previousLinkClassName={"previousBttn"}
-                                    nextLinkClassName={"nextBttn"}
-                                    activeClassName={"paginationActive"}
-                                />
-                                </Row>
-                            }
-
-                            {!lecturerInactive &&
-                                <p className = "text-center">No lecturer in the list yet!</p>
-                            }
-                           </Tab.Pane>
-                        </Tab.Content>
-                        </Col>
+                                    <Col className="col-2">
+                                    <Button style={{color:'white', backgroundColor:'#104271'}}
+                                    onClick={(event) => {
+                                        acceptUser(event, val.lecturer_id);
+                                    }}>Allow</Button>
+                                    </Col>
+                                    <Col className="col-4">
+                                    <Button style={{color:'white', backgroundColor:'#104271'}} 
+                                    onClick={(event) => {
+                                        rejectUser(event, val.lecturer_id);
+                                    }}
+                                    >Reject</Button>
+                                    </Col>
+                                </Row>    
+                                :
+                                <span>None</span>
+                                }</td>
+                            </tr>
+                            </tbody>
+                        );
+                        })}
+                        </Table>
+                        <Row className="mb-3">
+                        </Row>
+                        <ReactPaginate
+                        previousLabel={"Previous"}
+                        nextLabel={"Next"}
+                        pageCount={pageCount}
+                        onPageChange={changePage}
+                        containerClassName={"paginationBttns"}
+                        previousLinkClassName={"previousBttn"}
+                        nextLinkClassName={"nextBttn"}
+                        activeClassName={"paginationActive"}
+                    />
                     </Row>
-                    </Tab.Container>
+                    :
+                    <span>No user in this list yet!</span>
+                    }
                 </Tab>
                 <Tab eventKey="representative" title="Representative">
-                <Tab.Container id="left-tabs-example" defaultActiveKey="first">
+                {rep ?
                     <Row>
-                        <Col sm={3}>
-                        <Nav variant="pills" className="flex-column">
-                            <Nav.Item>
-                            <Nav.Link eventKey="first">Active</Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                            <Nav.Link eventKey="second">Inactive</Nav.Link>
-                            </Nav.Item>
-                        </Nav>
-                        </Col>
-                        <Col sm={9}>
-                        <Tab.Content>
-                            <Tab.Pane eventKey="first">
-                            {representative &&
-                <Row>
-                    <Table striped bordered hover>
+                        <Table striped bordered hover>
                         <thead>
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Status</th>
+                            <th>Action(Allow/Reject User Access?)</th>
                         </tr>
                         </thead>
-                        {representativeList.slice(pagesVisited1, pagesVisited1 + repPerPage).map((val, key) => {
+                        {repList.slice(pagesVisited1, pagesVisited1 + repPerPage).map((val1, key1) => {
                         return (
-                            <tbody key={key}>
+                            <tbody key={key1}>
                             <tr>
-                                {/* {displayCompany} */}
-                                <td>{val.representative_name}</td>
-                                <td>{val.representative_email}</td>
-                                <td>{val.representative_status}</td>
+                                <td>{val1.representative_name}</td>
+                                <td>{val1.representative_email}</td>
+                                <td>{val1.representative_status}</td>
+                                <td>{val1.representative_status === 'Pending' ?
+                                <Row>
+                                    <Col className="col-2">
+                                    <Button className = "mx-1" style={{color:'white', backgroundColor:'#104271'}}
+                                    onClick={(event) => {
+                                        acceptUser1(event, val1.representative_id);
+                                    }}>Allow</Button>
+                                    </Col>
+                                    <Col className="col-2">
+                                    <Button style={{color:'white', backgroundColor:'#104271'}} 
+                                    onClick={(event) => {
+                                        rejectUser1(event, val1.representative_id);
+                                    }}
+                                    >Reject</Button>
+                                    </Col>
+                                </Row>    
+                                :
+                                <span>None</span>
+                                }</td>
                             </tr>
                             </tbody>
                         );
                         })}
-                    </Table>
-                    <Row className="mb-3">
+                        </Table>
+                        <Row className="mb-3">
+                        </Row>
+                        <ReactPaginate
+                        previousLabel={"Previous"}
+                        nextLabel={"Next"}
+                        pageCount={pageCount1}
+                        onPageChange={changePage1}
+                        containerClassName={"paginationBttns"}
+                        previousLinkClassName={"previousBttn"}
+                        nextLinkClassName={"nextBttn"}
+                        activeClassName={"paginationActive"}
+                    />
                     </Row>
-                    <ReactPaginate
-                    previousLabel={"Previous"}
-                    nextLabel={"Next"}
-                    pageCount={pageCount1}
-                    onPageChange={changePage1}
-                    containerClassName={"paginationBttns"}
-                    previousLinkClassName={"previousBttn"}
-                    nextLinkClassName={"nextBttn"}
-                    activeClassName={"paginationActive"}
-                  />
-                </Row>
-                }
-
-                        {!representative &&
-                            <p className = "text-center">No representative in the list yet!</p>
-                        }
-                           </Tab.Pane>
-                            <Tab.Pane eventKey="second">
-                            {representativeInactive &&
-                <Row>
-                    <Table striped bordered hover>
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                        </tr>
-                        </thead>
-                        {representativeListInactive.slice(pagesVisited3, pagesVisited3 + repPerPageIn).map((val, key) => {
-                        return (
-                            <tbody key={key}>
-                            <tr>
-                                {/* {displayCompany} */}
-                                <td>{val.representative_name}</td>
-                                <td>{val.representative_email}</td>
-                                <td>{val.representative_status}</td>
-                            </tr>
-                            </tbody>
-                        );
-                        })}
-                    </Table>
-                    <Row className="mb-3">
-                    </Row>
-                    <ReactPaginate
-                    previousLabel={"Previous"}
-                    nextLabel={"Next"}
-                    pageCount={pageCount3}
-                    onPageChange={changePage3}
-                    containerClassName={"paginationBttns"}
-                    previousLinkClassName={"previousBttn"}
-                    nextLinkClassName={"nextBttn"}
-                    activeClassName={"paginationActive"}
-                  />
-                </Row>
-                }
-
-                        {!representativeInactive &&
-                            <p className = "text-center">No representative in the list yet!</p>
-                        }
-                           </Tab.Pane>
-                        </Tab.Content>
-                        </Col>
-                    </Row>
-                    </Tab.Container>
+                    :
+                    <span>No user in this list yet!</span>
+                    }
                 </Tab>
             </Tabs>
+
+            <Modal show={modalAccept} onHide={closeAccept}>
+                <Modal.Header closeButton>
+                <Modal.Title>Accept</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>User request has been accepted!</Modal.Body>
+                <Modal.Footer>
+                <Button style={{color:'white', backgroundColor:'#104271'}} variant="secondary" onClick={closeAccept}>
+                    Close
+                </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={modalReject} onHide={closeReject}>
+                <Modal.Header closeButton>
+                <Modal.Title>Reject</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>User request has been rejected!</Modal.Body>
+                <Modal.Footer>
+                <Button style={{color:'white', backgroundColor:'#104271'}} variant="secondary" className = "mr-3" onClick={closeReject}>
+                    Close
+                </Button>
+                </Modal.Footer>
+            </Modal>
+
             </Card>
         </div>
     )

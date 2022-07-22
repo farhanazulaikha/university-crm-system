@@ -1,14 +1,14 @@
-import React, {useContext} from 'react'
-import {Navbar, Nav, Container, Image, NavDropdown } from 'react-bootstrap';
-import {Link} from 'react-router-dom';
+import React, {useContext, useState, useEffect} from 'react'
+import {Navbar, Nav, Container, Image, NavDropdown, Button } from 'react-bootstrap';
+import {Link, NavLink} from 'react-router-dom';
 import webLogo from './../assets/logo.png';
 import { SignInContext, UserTypeContext } from './../Helper/Context';
 import './Navigation.css';
 import { BsFillPersonFill } from "react-icons/bs";
 import { BsFillChatLeftTextFill } from "react-icons/bs";
+import { BsFillBellFill } from "react-icons/bs";
 
-
-function Navigation(){
+function Navigation() {
 
     const {signedIn, isSignedIn} = useContext(SignInContext);
     const {type, isUserType} = useContext(UserTypeContext);
@@ -17,10 +17,19 @@ function Navigation(){
       isSignedIn(false);
     }
 
-    const navDropdownTitle = <span><BsFillPersonFill/></span>
-    const chat = <span><BsFillChatLeftTextFill/></span>
+    
+    var navDropdownTitle;
 
-    // const [userType, isUserType] = useState("");
+    if(type === 'Lecturer'){
+      navDropdownTitle = <span className ="fw-bold">LECTURER <BsFillPersonFill/></span>
+    }
+    else if(type === 'Representative'){
+      navDropdownTitle = <span className ="fw-bold">REPRESENTATIVE <BsFillPersonFill/></span>
+    }
+    else if(type === 'Admin'){
+      navDropdownTitle = <span className ="fw-bold">ADMIN <BsFillPersonFill/></span>
+    }
+    const chat = <span><BsFillChatLeftTextFill/></span>
 
     return(
         <SignInContext.Provider value={ {signedIn, isSignedIn} }>
@@ -32,48 +41,60 @@ function Navigation(){
 
                             <Nav className="right-side me-auto text-white">
                               {type === "Lecturer" &&
-                                <Nav.Link as = {Link} to = '/lecturer/:id/chat' className="text-white p-3 navStyle">{chat}</Nav.Link>
+                                <Nav.Link as = {Link} to = '/lecturer/:id/chat' className="text-white p-3 navStyle" activeClassName="fw-bold">{chat}</Nav.Link>
                               }
                               {type === "Representative" &&
-                                <Nav.Link as = {Link} to = '/representative/:id/chat' className="text-white p-3 navStyle">{chat}</Nav.Link>
+                                <Nav.Link as = {Link} to = '/representative/:id/chat' className="text-white p-3 navStyle" activeClassName="fw-bold">{chat}</Nav.Link>
                               }
                               {type === "Admin" &&
-                                <Nav.Link as = {Link} to = '/admin/:id/dashboard' className="text-white p-3 navStyle">Users</Nav.Link>
+                                <Nav.Link as = {NavLink} to = '/admin/:id/dashboard' className="text-white p-3 navStyle" activeClassName="fw-bold">Dashboard</Nav.Link>
                               }
-                              {type === "Lecturer" &&
-                                <Nav.Link as = {Link} to = '/lecturer/:id/dashboard' className="text-white p-3 navStyle">Dashboard</Nav.Link>
-                              }
-                              {type === "Representative" &&
-                                <Nav.Link as = {Link} to = '/representative/:id/dashboard' className="text-white p-3 navStyle">Dashboard</Nav.Link>
-                              }
-                              {type === "Lecturer" &&
-                              <Nav.Link as = {Link} to = '/lecturer/:id/companylist' className="text-white p-3 navStyle">Company</Nav.Link>
-                              }
-                              {type === "Representative" &&
-                                <Nav.Link as = {Link} to = '/representative/:id/lecturerlist' className="text-white p-3 navStyle">Lecturer</Nav.Link>
-                              }
-                              <NavDropdown title="Project" id ="nav-dropdown" className="navStyle">
-                                {type === "Lecturer" &&
-                                  <NavDropdown.Item as = {Link} to = '/lecturer/:id/companyprojectlist'>Company Project</NavDropdown.Item>
-                                }
-                                {type === "Representative" &&
-                                  <NavDropdown.Item as = {Link} to = '/representative/:id/lecturerprojectlist'>Lecturer Project</NavDropdown.Item>
-                                }
-                                {type === "Lecturer" &&
-                                  <NavDropdown.Item as = {Link} to = '/lecturer/:id/yourproject'>Your Project</NavDropdown.Item>
-                                }
-                                {type === "Representative" &&
-                                  <NavDropdown.Item as = {Link} to = '/representative/:id/yourproject'>Your Project</NavDropdown.Item>
-                                }
-                              </NavDropdown>
                               
                               {type === "Lecturer" &&
-                              <Nav.Link as = {Link} to = '/lecturer/:id/news' className="text-white p-3 navStyle">News</Nav.Link>
+                                <Nav.Link as = {NavLink} to = '/lecturer/:id/dashboard' className="text-white p-3 navStyle" activeClassName="fw-bold">Dashboard</Nav.Link>
                               }
                               {type === "Representative" &&
-                                <Nav.Link as = {Link} to = '/representative/:id/news' className="text-white p-3 navStyle">News</Nav.Link>
+                                <Nav.Link as = {NavLink} to = '/representative/:id/dashboard' className="text-white p-3 navStyle" activeClassName="fw-bold">Dashboard</Nav.Link>
                               }
-                              <NavDropdown title={navDropdownTitle} id ="nav-dropdown" className="navStyle">
+
+                              {type === "Admin" &&
+                                <Nav.Link as = {NavLink} to = '/admin/:id/users' className="text-white p-3 navStyle" activeClassName="fw-bold">Users</Nav.Link>
+                              }
+                              {type === "Lecturer" &&
+                              <Nav.Link as = {NavLink} to = '/lecturer/:id/companylist' className="text-white p-3 navStyle" activeClassName="fw-bold">Company</Nav.Link>
+                              }
+                              {type === "Representative" &&
+                                <Nav.Link as = {NavLink} to = '/representative/:id/lecturerlist' className="text-white p-3 navStyle" activeClassName="fw-bold">Lecturer</Nav.Link>
+                              }
+
+                              {type === "Admin" &&
+                              <Nav.Link as = {NavLink} to = '/admin/:id/companylist' className="text-white p-3 navStyle" activeClassName="fw-bold">Company</Nav.Link>
+                              }
+                              {type !== "Admin" &&
+                                  <NavDropdown title="Project" id ="nav-dropdown" className="navStyle" activeClassName="fw-bold">
+                                  {type === "Lecturer" &&
+                                    <NavDropdown.Item as = {Link} to = '/lecturer/:id/companyprojectlist'>Company Project</NavDropdown.Item>
+                                  }
+                                  {type === "Representative" &&
+                                    <NavDropdown.Item as = {Link} to = '/representative/:id/lecturerprojectlist'>Lecturer Project</NavDropdown.Item>
+                                  }
+                                  {type === "Lecturer" &&
+                                    <NavDropdown.Item as = {Link} to = '/lecturer/:id/yourproject'>Your Project</NavDropdown.Item>
+                                  }
+                                  {type === "Representative" &&
+                                    <NavDropdown.Item as = {Link} to = '/representative/:id/yourproject'>Your Project</NavDropdown.Item>
+                                  }
+                                </NavDropdown>
+                              }
+                              
+                              {type === "Lecturer" &&
+                              <Nav.Link as = {NavLink} to = '/lecturer/:id/news' className="text-white p-3 navStyle" activeClassName="fw-bold">News</Nav.Link>
+                              }
+                              {type === "Representative" &&
+                                <Nav.Link as = {NavLink} to = '/representative/:id/news' className="text-white p-3 navStyle" activeClassName="fw-bold">News</Nav.Link>
+                              }
+                              <NavDropdown title={navDropdownTitle} id ="nav-dropdown" className="navStyle" activeClassName="fw-bold">
+                              
                                 {type === "Lecturer" &&
                                   <NavDropdown.Item as = {Link} to = '/lecturer/:id/editprofile'>Edit Profile</NavDropdown.Item>
                                 }

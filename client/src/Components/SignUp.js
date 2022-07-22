@@ -20,7 +20,6 @@ function SignUp(){
     const addUser = (e) => {
         e.preventDefault();
 
-        // let type = userType.charAt(0).toUpperCase() + userType.slice(1);
 
         Axios.post("http://localhost:3001/signup", {
             userEmail: userEmail,
@@ -28,13 +27,29 @@ function SignUp(){
             userFullName: userFullName,
             userContact: userContact,
             userType: userType,
-            userStatus: "Inactive",
+            userStatus: "Pending",
         }).then((res) => {
             if(res.data.checkUser){
-                history.push('/');
+
+
+                    const authObject = {'Private-Key': '156900bc-aacf-4cfa-ae06-aae12ee55632'}
+    
+                    try {
+                        Axios.post('https://api.chatengine.io/users/',
+                        {'username': userEmail, 'secret': userPassword}, // Body object
+                        {'headers': authObject} // Headers object
+                        );
+    
+
+    
+                        history.push('/');
+                        
+                     } catch (error) {
+                         console.log(error)
+                     }
             }
             else{
-                window.alert('Email has already been used!');
+                window.alert('Email/password has already been used!');
             }
         })
     }

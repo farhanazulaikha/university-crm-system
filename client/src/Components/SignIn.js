@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react'
 import { Form, InputGroup, Button} from 'react-bootstrap';
 import './SignIn.css'
 import { useHistory } from 'react-router-dom';
-import { SignInContext, UserTypeContext, UserContext } from './../Helper/Context';
+import { SignInContext, UserTypeContext, UserContext, EmailContext, PasswordContext, NameContext } from './../Helper/Context';
 import Axios from 'axios'
 
 
@@ -16,6 +16,9 @@ function SignIn(){
   const {signedIn, isSignedIn} = useContext(SignInContext);
   const {type, isUserType} = useContext(UserTypeContext);
   const {userId, setUserId} = useContext(UserContext);
+  const {email, isEmail} = useContext(EmailContext);
+  const {password, isPassword} = useContext(PasswordContext);
+  const {name, isName} = useContext(NameContext);
 
   const[passwordShown, setPasswordShown] = useState(false);
 
@@ -29,26 +32,43 @@ function SignIn(){
     }).then((res) => {
       
       if(res.data.isAuthorized){
-        isSignedIn(true);
-        // console.log(res.data.type);
-        const id = res.data.id;
+
+        if(res.data.status === 'Active'){
+          isSignedIn(true);
+          const id = res.data.id;
+          const userEmail = res.data.email;
+          const userPassword = res.data.password;
+          const userName = res.data.name;
+
+          if(res.data.type === 'Admin'){
+            isUserType("Admin");
+            setUserId(id);
+            history.push(`/admin/${id}/dashboard`)
+          }
+          else if(res.data.type === 'Lecturer'){
+            isUserType("Lecturer");
+            setUserId(id);
+            isEmail(userEmail);
+            isPassword(userPassword);
+            isName(userName);
+            history.push(`/lecturer/${id}/dashboard`)
+          }
+          else{
+            isUserType("Representative");
+            setUserId(id);
+            isEmail(userEmail);
+            isPassword(userPassword);
+            isName(userName);
+            history.push(`/representative/${id}/dashboard`)
+          }
+        }
+        else if(res.data.status === 'Pending'){
+          window.alert("Your user access is still pending!")
+        }
+        else if(res.data.status === 'Inactive'){
+          window.alert('Your user access has been rejected!')
+        }
         
-        if(res.data.type === 'Admin'){
-          isUserType("Admin");
-          setUserId(id);
-          history.push(`/admin/${id}/dashboard`)
-        }
-        else if(res.data.type === 'Lecturer'){
-          isUserType("Lecturer");
-          setUserId(id);
-          history.push(`/lecturer/${id}/dashboard`)
-        }
-        else{
-          isUserType("Representative");
-          setUserId(id);
-          history.push(`/representative/${id}/dashboard`)
-        }
-        // setUserId(id);
       }
       else{
         window.alert("Wrong email/password!");

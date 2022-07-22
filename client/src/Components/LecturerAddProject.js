@@ -18,28 +18,17 @@ function LecturerAddProject(){
     const [projectType, setType] = useState("");
     const [projectField, setField] = useState("");
 
-    const [pType, setPType] = useState([]);
-    const [pField, setPField] = useState([]);
+    var today = new Date();
+    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
-    // useEffect(() => {
-    //     Axios.get('http://localhost:3001/type').then((response) => {
-    //         setPType(response.data);
-    //     })
-    // });
+    var d = new Date(date);
+    var day = d.toLocaleDateString('en-us', {weekday:'long'});
 
-    // useEffect(() => {
-    //     Axios.get('http://localhost:3001/field').then((response) => {
-    //         setPField(response.data);
-    //     })
-    // });
+    var time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
 
     const addNewProject = (e) => {
 
         e.preventDefault();
-
-        // let pType = projectType.toUpperCase();
-        // let field = projectField.toUpperCase();
-        // let status = projectStatus.charAt(0).toUpperCase() + projectStatus.slice(1);
 
         Axios.post("http://localhost:3001/addnewprojectl", {
             userId: userId,
@@ -48,15 +37,16 @@ function LecturerAddProject(){
             projectStatus: projectStatus,
             projectType: projectType,
             projectField: projectField,
+            projectDate: date,
+            projectTime: time,
+            projectDay: day,
             projectOwner: type,
         })
         .then((res) => {
 
-            // const projectId = res.data.projectId;
+            if(res){
 
-            if(res.data.addSuccess){
                 window.alert("Successfully added new project!");
-                // history.push(`/lecturer/${userId}/viewproject/${projectId}`)
                 history.push(`/lecturer/${userId}/dashboard`);
             }
             else{
@@ -77,6 +67,8 @@ function LecturerAddProject(){
             <h3>Add Project</h3>
 
             <hr/>
+            <span>(Note: Only projects related to Research and Development (RnD) and Teaching and Learning (TnL) can be added)</span>
+            <br/><br/>
             
             <Form.Group className="mb-3" controlId="projectTitle">
             <Form.Label>Project Title</Form.Label>
@@ -116,12 +108,7 @@ function LecturerAddProject(){
                         setType(event.target.value);
                     }}
                 >
-                    {/* <option className = "text-muted">Select your project type here...</option> */}
-                    {/* {pType.map((val, key) => {
-                        return(
-                                <option key = {key} value = {val.project_type_id}>{val.project_type_label}</option>
-                        )
-                    })} */}
+                    
                     <option className = "text-muted">Select your project type here...</option>
                     <option value="RND">Research and Development</option>
                     <option value="TNL">Teaching and Learning</option>
@@ -142,20 +129,15 @@ function LecturerAddProject(){
                     <option value="IC2">Media and Visual Computing</option>
                     <option value="SE1">Information Systems Development</option>
                     <option value="SE2">Specialised Systems Development</option>
-                    {/* <option className = "text-muted">Select your project field here...</option>
-                    {pField.map((val1, key1) => {
-                        return(
-                                <option key = {key1} value = {val1.project_field_id}>{val1.project_field_label}</option>
-                        )
-                    })} */}
+                    
                 </Form.Control>
             </Form.Group>
             
 
 
             <div className = "d-flex flex-end  justify-content-end align-items-end mt-3">
-            <Button className = "d-flex flex-end justify-content-end align-items-end mx-3" type="submit" onClick = {backToProfile}>Cancel</Button>
-            <Button className = "d-flex flex-end justify-content-end align-items-end" variant="primary" type="submit">
+            <Button style={{color:'white', backgroundColor:'#104271'}} className = "d-flex flex-end justify-content-end align-items-end mx-3" type="button" onClick = {backToProfile}>Cancel</Button>
+            <Button style={{color:'white', backgroundColor:'#104271'}} className = "d-flex flex-end justify-content-end align-items-end" variant="primary" type="submit">
                 Add
             </Button>
             

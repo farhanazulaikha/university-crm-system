@@ -4,12 +4,13 @@ import { Form, Button, Card } from 'react-bootstrap';
 import Axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
-function LecturerEditProject(){
+function LecturerEditProject({socket, name}){
+
+    const [added, setAdded] = useState(false);
 
     const history = useHistory();
 
     const {userId, setUserId} = useContext(UserContext);
-    const {type, isUserType} = useContext(UserTypeContext);
 
     const [projectCode, setProjectCode] = useState("");
     const [projectTitle, setProjectTitle] = useState("");
@@ -33,6 +34,7 @@ function LecturerEditProject(){
     const split = link.split("/");
     const projectId = split[4];
 
+
     useEffect(()=>{
         Axios.get(`http://localhost:3001/lecturer/${userId}/viewproject/${projectId}`,{
             userId: userId,
@@ -46,55 +48,26 @@ function LecturerEditProject(){
             setProjectType(res.data.projectTypeId);
             setProjectField(res.data.projectFieldId);
             setCollaboratorId(res.data.representativeId);
-
-            // let pType = res.data.projectTypeId.toLowerCase();
-            // let field = res.data.projectFieldId.toLowerCase();
-            // let status = res.data.projectStatus.charAt(0).toLowerCase() + res.data.projectStatus.slice(1);
-
-            // console.log(pType, field, status);
-
-            // setProjectStatus(status);
-            // setProjectType(pType);
-            // setProjectField(field);
         })
+    }, []);
+
+    useEffect(()=>{
+
+        getRepresentative();
     });
 
-    useEffect(() => {
-        const fetchRep = async () => {
-            const res = await Axios.get(`/lecturer/${userId}/representativelist`).then((response) =>{
-                setRepList(response.data);
-            })
-        }
+    function getRepresentative() {
+        Axios.get(`http://localhost:3001/lecturer/${userId}/representativelist`)
+      .then(response => {
+          setRepList(response.data);
+        });
+    };
 
-        fetchRep();
-    }, []);
 
     const updateProject = async(event) => {
         event.preventDefault();
 
-        if(title === ""){
-            setTitle(projectTitle);
-        }
-
-        if(information === ""){
-            setInformation(projectInformation);
-        }
-
-        if(status === ""){
-            setStatus(projectStatus);
-        }
-
-        if(pType === ""){
-            setPType(projectType);
-        }
-
-        if(field === ""){
-            setField(projectField);
-        }
-
-        if(collabId === ""){
-            setCollabId(collaboratorId);
-        }
+        
 
         const res = await Axios.put(`http://localhost:3001/lecteditproject/${projectId}`,{
                 projectId: projectId,
@@ -105,18 +78,15 @@ function LecturerEditProject(){
                 projectField: field,
                 collaboratorId: collabId,
         }).then((response) => {
-                // if(response.data.updateSuccess){
                 if(response){
+
                     window.alert('Your project has been updated!');
                     history.push(`/lecturer/${userId}/viewproject/${projectId}`);
                 }
                 else{
                     window.alert('Update is unsuccessful!');
                 }
-                // }
-                // else{
-                //     window.alert('Update is unsuccessful!')
-                // }
+                
                 
             })
     }
@@ -202,27 +172,18 @@ function LecturerEditProject(){
                 </Form.Control>
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="projectCollaborator">
-                    <Form.Label>Collaborator</Form.Label>
-                    <Form.Control type="text" placeholder="Enter your project collaborator ID here"  
-                        onChange = {(event) => {
-                            setCollabId(event.target.value);
-                        }}
-                        defaultValue = {collaboratorId}
-                    />
-            </Form.Group>
-
             <Form.Group className="mb-3" controlId="projectCol">
-                    <Form.Label>Project Field</Form.Label>
+                    <Form.Label>Collaborator</Form.Label>
                     <Form.Control as="select" 
+                    value = {collaboratorId}
                     onChange = {(event) => {
                         setCollabId(event.target.value);
                     }}
                 >  
-                    <option className = "text-muted">Select your project collaborator here...</option>
+                    <option className = "text-muted">Select your collaborator here...</option>
                     {repList.map((val1, key1) => {
                         return(
-                                <option key = {key1} value = {val1.representative_id}>{val1.representative_name}</option>
+                            <option key = {key1} value = {val1.representative_id}>{val1.company_name} - {val1.representative_name}</option>
                         )
                     })}
                 </Form.Control>
@@ -231,11 +192,11 @@ function LecturerEditProject(){
 
 
             <div className = "d-flex flex-end  justify-content-end align-items-end mt-3">
-            <Button className = "d-flex flex-end justify-content-end align-items-end mx-3" type="submit" 
+            <Button style={{color:'white', backgroundColor:'#104271'}} className = "d-flex flex-end justify-content-end align-items-end mx-3" type="submit" 
             onClick={(event) => {
                 backToProject(event, projectCode);
             }}>Cancel</Button>
-            <Button className = "d-flex flex-end justify-content-end align-items-end" variant="primary" type="submit">
+            <Button style={{color:'white', backgroundColor:'#104271'}} className = "d-flex flex-end justify-content-end align-items-end" variant="primary" type="submit">
                 Update
             </Button>
           </div>

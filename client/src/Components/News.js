@@ -1,83 +1,79 @@
 import React, {useState, useContext, useEffect} from 'react'
-import {Form, Button, Modal, Row, Col} from 'react-bootstrap'
+import {Form, Button, Row, Col, Image} from 'react-bootstrap'
 import Axios from 'axios'
 import { UserContext, UserTypeContext } from './../Helper/Context';
+// import './ViewProject.css';
+import { BsArrowReturnRight } from "react-icons/bs";
+import Comment from './Comment';
+import './News.css'
+
 
 function News() {
 
     const {userId, setUserId} = useContext(UserContext);
     const {type, isUserType} = useContext(UserTypeContext);
 
-    const [news, setNews] = useState("");
+    const [news, setNews] = useState("");   
 
-    const [newsL, setNewsL] = useState("");
-    const [isNewsL, setIsNewsL] = useState(false);
-    const [newsListL, setNewsListL] = useState([]);
-
-    const [newsR, setNewsR] = useState("");
-    const [isNewsR, setIsNewsR] = useState(false);
-    const [newsListR, setNewsListR] = useState([]);
-
-    const [newsList, setNewsList] = useState([]);
-
-    const [showNews, setShowNews] = useState(false);
-    const handleClose = () => setShowNews(false);
-
-    useEffect(()=>{
-        Axios.get(`http://localhost:3001/lecturerpost`,{
-            
-        })
-        .then((response) => {
-            if(response.data.length > 0){
-                // setIsNews(true);
-                setNewsList(response.data);
-            }
-        })
-    });
-
-    // useEffect(()=>{
-    //     Axios.get(`http://localhost:3001/representativepost`,{
-            
-    //     })
-    //     .then((response) => {
-    //         if(response.data.length > 0){
-    //             setIsNewsR(true);
-    //             setNewsListR(response.data);
-    //         }
-    //         else{
-    //             setIsNewsR(false);
-    //         }
-    //     })
-    // });
-
-    // newsList = newsListL.concat(newsListR);
-
-    // console.log(newsList);
-
-    const addNews = (e) => {
-
-        e.preventDefault();
-
-        Axios.post("http://localhost:3001/addpost", {
-            post: news,
-            userId: userId,
-            userType: type,
-            date: date,
-            time: time,
-        }).then((res) => {
-            setShowNews(true);
-        })
-
-    }
+    const arrow = <span><BsArrowReturnRight/></span>
 
     var today = new Date();
     var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
+    var d = new Date(date);
+    var day = d.toLocaleDateString('en-us', {weekday:'long'});
+
     var time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
 
+
+    const [newsList, setNewsList] = useState([]);
+
+    const rootNews = newsList.filter(
+        (newList) => newList.reply_of === null
+    );
+    
+
+    useEffect(()=>{
+        
+        Axios.get('http://localhost:3001/news',{  
+        })
+        .then((response) => {
+            if(response.data.length > 0){
+
+                setNewsList(response.data);
+            
+            }
+
+        })
+
+    },[newsList]);
+
+
+    const addNews = async(e) => {
+
+        e.preventDefault();
+
+
+        const res = await Axios.post("http://localhost:3001/addpost", {
+            post: news,
+            userId: userId,
+            userType: type,
+            date: date,
+            day: day,
+            time: time,
+        }).then(() => {
+            setNews(null);
+        })
+
+    }
+
+    
+
+
   return (
-    <div className = "p-5">
-            <Form onSubmit={addNews}>
+    <div className = "news p-5">
+        <h3 className="news-title">News</h3>
+        <Form onSubmit={addNews}>
                 <Form.Group className="mb-3" controlId="postId">
                     <Form.Control as="textarea" rows={2} placeholder="Enter your post here"  
                         onChange = {(event) => {
@@ -87,45 +83,19 @@ function News() {
                 </Form.Group>
                 
                 <div className = "d-flex flex-end justify-content-end align-items-end mt-3">
-                    <Button type="submit">Post</Button>
+                    <Button style={{color:'white', backgroundColor:'#104271'}} type="submit">Post</Button>
                 </div>
-            </Form>
-
-            <Col className = "mb-5 text-center">
-                {newsList.map((val, key) => {
-                    return(
-                        <div key = {key}>
-                            <Row>
-                                {val.lecturer_id}
-                            </Row>
-                            <Row>
-                                {val.lecturer_news_title}
-                            </Row>
-                            <Row>
-                                {val.date}
-                            </Row>
-                            <Row>
-                                {val.time}
-                            </Row>                   
-                        </div>
-                    )
-                })}
-            </Col>
-
-            <Modal show={showNews} onHide={handleClose}>
-                <Modal.Header closeButton>
-                <Modal.Title>SUCCESSFUL</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Your post has been published!</Modal.Body>
-                <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                    Close
-                </Button>
-                </Modal.Footer>
-            </Modal>
-
-            
-
+        </Form>
+        <div className = "comments-container">
+            {rootNews.map((rootNew, key) => (
+                <div key={key}>
+                    <Comment  
+                    comment={rootNew}
+                    newsList={newsList}
+                    />
+                </div>
+            ))}
+        </div>                      
         </div>
   )
 }

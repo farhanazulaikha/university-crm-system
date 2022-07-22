@@ -16,7 +16,8 @@
 
 .user-img{
     display: flex;
-    width: 10%;
+    height: 200px;
+    width: auto;
     float:left;
     margin-bottom: 10px;
 }
@@ -29,4 +30,18 @@
 .card2{
     height: 500px;
     width:auto;
+}
+
+.card3{
+    height: 200px;
+    width:auto;
+}
+
+.rec{
+    height:auto;
+    width: auto;
+}
+
+.rec4{
+    height: 70px;
 }

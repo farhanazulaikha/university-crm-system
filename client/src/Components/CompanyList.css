@@ -18,22 +18,31 @@
     padding: 10px;
     margin: 8px;
     border-radius: 5px;
-    border: 1px solid #2b2eff;
-    color: #2b2eff;
+    border: 1px solid #104271;
+    color: #104271;
     cursor: pointer;
   }
   
   .paginationBttns a:hover {
     color: white;
-    background-color: #2b2eff;
+    background-color: #104271;
   }
   
   .paginationActive a {
     color: white;
-    background-color: #2b2eff;
+    background-color: #104271;
   }
   
   .paginationDisabled a {
     color: grey;
     background-color: grey;
+  }
+
+  .tablehead{
+    background-color: #104271;
+    color: white;
+  }
+
+  .tablecontent{
+    background-color: #e7ecf0;
   }

@@ -1,9 +1,9 @@
 import React, {useState, useContext, useEffect} from 'react'
-import { Card, Row, Col, Button } from 'react-bootstrap';
+import { Card, Row, Col, Button, Table } from 'react-bootstrap';
 import { UserContext} from './../Helper/Context';
 import { useHistory } from 'react-router-dom';
 import Axios from 'axios';
-import './Profile.css'
+import './LecturerProject.css'
 
 
 function LecturerProject(){
@@ -17,7 +17,7 @@ function LecturerProject(){
 
     useEffect(()=>{
 
-        Axios.get(`http://localhost:3001/lectproject/${userId}`,{
+        Axios.get(`http://localhost:3001/findlectproject/${userId}`,{
             id: userId,
         })
         .then((res) => {
@@ -30,7 +30,7 @@ function LecturerProject(){
                 isProject(false);
             }
         });
-    }, [userId]);
+    });
 
     const addProject = () => {
 
@@ -38,45 +38,46 @@ function LecturerProject(){
         history.push(`/lecturer/${id}/lectureraddproject`);
     }
 
+    const showMore = (event) => {
+        history.push(`/lecturer/${userId}/yourproject`)
+    }
+
     const showProject = (event, projectId) => {
+
+        event.preventDefault();
+        
         history.push(`/lecturer/${userId}/viewproject/${projectId}`)
     }
 
     return(
         <div>
-            <Card className = "p-1 card1">
-                <Card.Title className = "px-3 pt-3">
-                    Your Project
-                    <hr/>
-                </Card.Title>
-                <Card.Body>
-                        {project && 
-                        <Row>
-                            {projectList.map((val, key) => {
-                                return(
-                                    <div key = {key}>
-                                    <Col>
-                                        <Button variant="link" className = "btn btn-link d-flex justify-content-start"
-                                        onClick={(event) => {
-                                            showProject(event, val.project_id);
-                                        }}>{val.project_title}</Button>
-                                    </Col>
-                                    </div>
-                                )
-                            })}
-                        </Row>
-                        }
-
-                        {!project &&
-                            <p>No project has been added yet!</p>
-                        }
-                    <Row>
-                        <Button type = "submit" className = "btn btn-link text-black bg-white border-0 d-flex justify-content-end" onClick={addProject}>
-                            Add
-                        </Button>
-                    </Row>
-                </Card.Body>
-            </Card>
+            {
+                project
+                ?
+                <Table bordered hover size="sm">
+                        <thead>
+                        <tr style={{color: "white", backgroundColor: '#104271'}} className="p-1">
+                            <th>Title</th>
+                            <th>Type</th>
+                        </tr>
+                        </thead>
+                        {projectList.map((val, key) => {
+                        return (
+                            <tbody key={key}>
+                            <tr style={{backgroundColor: '#e7ecf0'}}>
+                                <td><Button variant="link" className="text-start"
+                                            onClick={(event) => {
+                                                showProject(event, val.project_id);
+                                }}>{val.project_title}</Button></td>
+                                <td>{val.project_type_label}</td>
+                            </tr>
+                            </tbody>
+                        );
+                        })}
+                    </Table>
+                :
+                <span>No project has been added yet!</span>
+            }
         </div>
     )
 }
