@@ -32,12 +32,6 @@ const io = new Server(server, {
     },
 });
 
-cloudinary.config({ 
-    cloud_name: 'farhana19', 
-    api_key: '561157664878161',
-    api_secret: 'aWglNWfqdR_c1mxCc9TOI1uBg_M'
-  });
-
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("./public"));

@@ -30,9 +30,7 @@ import AddCompany from './Components/AddCompany';
 import Chat from './Components/Chat';
 import Home from './Components/AdminHome';
 import AddActivity from './Components/AddActivity';
-import ChangePicture from './Components/ChangePicture';
 import AddAttachment from './Components/AddAttachment';
-import EditCompany from './Components/EditCompany';
 
 // const socket = io.connect("http://localhost:3001");
 
@@ -110,8 +108,6 @@ function App() {
                   <Route path = "/lecturer/:id/editprofile"><LecturerEditProfile/></Route>
                   <Route path = "/representative/:id/editprofile"><RepresentativeEditProfile/></Route>
 
-                  <Route path = "/lecturer/:id/changepic"><ChangePicture/></Route>
-                  <Route path = "/representative/:id/changepic"><ChangePicture/></Route>
 
 
                   <Route path = "/lecturer/:id/news"><News/></Route>
@@ -121,7 +117,6 @@ function App() {
                   <Route path = "/representative/:id/chat"><Chat/></Route>
 
                   <Route path = "/admin/:id/addcompany"><AddCompany/></Route>
-                  <Route path = "/admin/:id/editcompany/:id"><EditCompany/></Route>
 
                 </Switch>
       </NameContext.Provider>

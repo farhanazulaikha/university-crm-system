@@ -1,7 +1,6 @@
 import React from 'react'
 import LecturerProfile from './LecturerProfile';
 import LecturerProject from './LecturerProject';
-import LecturerActivity from './LecturerActivity';
 import LecturerFeaturedInfo from './LecturerFeaturedInfo';
 import ProjectRecommendation from './ProjectRecommendation';
 
